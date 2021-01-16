@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+numpy = "*"
+dgl = "*"
+networkx = "*"
+sklearn = "*"
+
+[dev-packages]
+dvc = {extras = ["gdrive"], version = "*"}
+black = "==19.10b0"
+flake8 = "*"
+isort = "*"
+mypy = "*"
+pytest = "*"
+yamllint = "*"
+
+[requires]
+python_version = "3.8"
