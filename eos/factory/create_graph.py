@@ -4,7 +4,7 @@ from pandas import DataFrame
 import networkx as nx
 from networkx import Graph
 
-class GraphCreation(object):
+class GraphCreator(object):
     """
     Create a graph from a 2D array of tabular data
     """
@@ -13,4 +13,4 @@ class GraphCreation(object):
 
     def df_to_graph(self) -> Graph:
         G: Graph = Graph()
-        return G
+        return G    

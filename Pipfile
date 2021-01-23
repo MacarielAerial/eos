@@ -9,6 +9,8 @@ numpy = "*"
 dgl = "*"
 networkx = "*"
 sklearn = "*"
+mysql-connector-python = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 dvc = {extras = ["gdrive"], version = "*"}
