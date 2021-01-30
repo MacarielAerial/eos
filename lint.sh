@@ -1,9 +1,9 @@
 yamllint .github/workflows/github.yml
 
-isort eos/
+isort eos
 
-black eos/
+black eos
 
-flake8 eos/
+flake8 eos
 
-mypy eos/
+mypy eos

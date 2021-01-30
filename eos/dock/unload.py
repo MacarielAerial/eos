@@ -3,8 +3,6 @@ Unloads tabular data from a SQL database
 """
 
 import pandas as pd
-
-# import sqlalchemy
 from pandas import DataFrame
 from sqlalchemy import create_engine
 
