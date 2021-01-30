@@ -1,49 +1,40 @@
-# This is a basic workflow to help you get started with Actions
-
+---
 name: Eos CI
 
-# Controls when the action will run. 
 on: [push, pull_request]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Check out GitHub repo
-        uses: actions/checkout@v2
-        
-      # Setup Python
-      - name: Setup Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
+steps:
+  # Checks-out the repository under $GITHUB_WORKSPACE
+  - name: Check out GitHub repo
+    uses: actions/checkout@v2
 
-      # Configure Python dependencies with Pipenv
-      - name: Configure Python environment
-        run: |
-          pip install pipenv
-          pipenv sync --dev
-      
-      # Lint
-      - name: Lint code
-        run: |
-          sh ./lint.sh
-      
-      # Test code
-      - name: Test code
-        run: |
-          python3 -m pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
-          
-      - name: Upload pytest results
-        uses: actions/upload-artifact@v2
-        with:
-          name: pytest-results
-          path: junit/test-results.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
+  - name: Setup Python
+    uses: actions/setup-python@v1
+    with:
+      python-version: 3.8
+
+  - name: Configure Python environment
+    run: |
+      pip install pipenv
+      pipenv sync --dev
+
+  - name: Lint code
+    run: |
+      pipenv run ./lint.sh
+
+  - name: Test code
+    run: |
+      pipenv run python -m pytest
+
+  - name: Upload pytest results
+    uses: actions/upload-artifact@v2
+    with:
+      name: pytest-results
+      path: junit/test-results.xml
+    # Use always() to always run this step to publish test results
+    # when there are test failures
+    if: ${{ always() }}

@@ -1,6 +1,6 @@
 import pandas as pd
 from networkx import Graph
-from eos.factory import GraphCreator
+from eos.factory.create_graph import GraphCreator
 
 def test_df_to_graph():
     df = pd.DataFrame()

@@ -2,8 +2,8 @@
 Calls all relevant objects in an arbitary order
 """
 
-from .dock import Unloader
-from .factory import GraphCreator
+from eos.dock.unload import Unloader
+from eos.factory.create_graph import GraphCreator
 
 
 def orchestrator(conn_str: str, table_name: str):

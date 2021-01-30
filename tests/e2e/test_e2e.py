@@ -1,4 +1,4 @@
-from eos import orchestrator
+from eos.orchestrator import orchestrator
 
 from networkx import Graph
 
