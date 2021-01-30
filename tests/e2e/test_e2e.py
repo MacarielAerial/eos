@@ -2,7 +2,7 @@ from eos.orchestrator import orchestrator
 
 from networkx import Graph
 
-conn_str: str = r"sqlite:///data/inputs/user/user.db"
+conn_str: str = r"sqlite:///tests/data/e2e/user.db"
 table_name = "user"
 
 
