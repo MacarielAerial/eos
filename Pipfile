@@ -11,6 +11,7 @@ networkx = "*"
 sklearn = "*"
 mysql-connector-python = "*"
 sqlalchemy = "*"
+pytesseract = "*"
 
 [dev-packages]
 dvc = {extras = ["gdrive"], version = "*"}
