@@ -7,34 +7,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-steps:
-  # Checks-out the repository under $GITHUB_WORKSPACE
-  - name: Check out GitHub repo
-    uses: actions/checkout@v2
+    steps:
+      # Checks-out the repository under $GITHUB_WORKSPACE
+      - name: Check out GitHub repo
+        uses: actions/checkout@v2
 
-  - name: Setup Python
-    uses: actions/setup-python@v1
-    with:
-      python-version: 3.8
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-  - name: Configure Python environment
-    run: |
-      pip install pipenv
-      pipenv sync --dev
+      - name: Configure Python environment
+        run: |
+          pip install pipenv
+          pipenv sync --dev
 
-  - name: Lint code
-    run: |
-      pipenv run ./lint.sh
+      - name: Lint code
+        run: |
+          pipenv run ./lint.sh
 
-  - name: Test code
-    run: |
-      pipenv run python -m pytest
+      - name: Test code
+        run: |
+          pipenv run python -m pytest
 
-  - name: Upload pytest results
-    uses: actions/upload-artifact@v2
-    with:
-      name: pytest-results
-      path: junit/test-results.xml
-    # Use always() to always run this step to publish test results
-    # when there are test failures
-    if: ${{ always() }}
+      - name: Upload pytest results
+        uses: actions/upload-artifact@v2
+        with:
+          name: pytest-results
+          path: junit/test-results.xml
+        # Use always() to always run this step to publish test results
+        # when there are test failures
+        if: ${{ always() }}
