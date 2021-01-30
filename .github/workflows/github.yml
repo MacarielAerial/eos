@@ -33,12 +33,12 @@ jobs:
       # Lint
       - name: Lint code
         run: |
-          lint.sh
+          sh ./lint.sh
       
       # Test code
       - name: Test code
         run: |
-          pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+          python3 -m pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
           
       - name: Upload pytest results
         uses: actions/upload-artifact@v2

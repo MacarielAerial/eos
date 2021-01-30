@@ -1,3 +1,5 @@
+yamllint .github/workflows/github.yml
+
 isort eos/
 
 black eos/
