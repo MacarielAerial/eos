@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Custom
+# Private data files
 /data
+
+# MacOS system generated files
+.DS_Store
