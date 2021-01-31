@@ -12,6 +12,11 @@ jobs:
       - name: Check out GitHub repo
         uses: actions/checkout@v2
 
+      - name: Setup Tesseract
+        run: |
+          sudo apt install tesseract-ocr
+          sudo apt install libtesseract-dev
+
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
