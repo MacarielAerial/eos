@@ -12,6 +12,7 @@ sklearn = "*"
 mysql-connector-python = "*"
 sqlalchemy = "*"
 pytesseract = "*"
+Pillow = "*"
 
 [dev-packages]
 dvc = {extras = ["gdrive"], version = "*"}
