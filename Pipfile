@@ -9,13 +9,14 @@ numpy = "*"
 dgl = "*"
 networkx = "*"
 sklearn = "*"
-mysql-connector-python = "*"
 sqlalchemy = "*"
 pytesseract = "*"
+opencv-python = "*"
 Pillow = "*"
 
 [dev-packages]
 dvc = {extras = ["gdrive"], version = "*"}
+mysql-connector-python = "*"
 black = "==19.10b0"
 flake8 = "*"
 isort = "*"
