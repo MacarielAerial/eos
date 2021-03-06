@@ -1,0 +1,7 @@
+# Contains input arguments for various tests
+
+
+test_dock:
+  csv_dataset:
+    =: kedro.extras.datasets.pandas.CSVDataSet
+    filepath: tests/data/integration/dock/inputs/spreadspoke_scores.csv

@@ -7,26 +7,38 @@ from pandas import DataFrame
 
 class GraphCreator(object):
     """
-    Create a graph from a 2D array of tabular data
+    Create a graph from a pandas DataFrame
     """
 
     def __init__(self, df_input: DataFrame):
         self.df_input = df_input
-        self.col_names: List[str] = list(df_input.columns)
-        self.row_names: List[str] = list(df_input.index)
+        print(
+            f"GraphCreator: Initiatng a graph from a DataFrame of shape {self.df_input.shape}"
+        )
+        self.g: Graph = Graph()
 
-    def df_to_graph(self) -> Graph:
-        G: Graph = Graph()
-        # Populate ids for nodes
-        [G.add_node(idx) for idx in self.row_names]
-        # Populate attributes for nodes
-        dict_nodes: Dict[str, Dict[str, Any]] = {}
-        for row_name in self.row_names:
-            dict_node_attrs: Dict[str, Any] = {}
-            for col_name in self.col_names:
-                dict_node_attr: Dict[str, Any] = {
-                    col_name: self.df_input.loc[row_name, col_name]
-                }
-                dict_node_attrs.update(dict_node_attr)
-        nx.set_node_attributes(G=G, values=dict_nodes)
-        return G
+    def _add_nids(self) -> None:
+        container_nids: List[Any] = list(self.df_input.index)
+        print(f"GraphCreator: Adding {len(container_nids)} nodes to the graph")
+        self.g.add_nodes_from(container_nids)
+
+    def _add_attr_keys(self) -> None:
+        container_attr_keys: List[str] = list(self.df_input.columns)
+        container_attrs_null: Dict[str, None] = dict.fromkeys(container_attr_keys)
+        print(
+            f"GraphCreator: Adding the following list of node attributes with null values to the graph:\n{container_attrs_null}"
+        )
+        mapping_nid_attr: Dict[Any, Dict[str, None]] = {
+            nid: container_attrs_null for nid in self.g.nodes
+        }
+        nx.set_node_attributes(self.g, mapping_nid_attr)
+
+    def create_graph(self) -> None:
+        print("GraphCreator: Creating the graph with the supplied DataFrame")
+        self._add_nids()
+        self._add_attr_keys()
+        print("GraphCreator: Created the graph accessible by property 'graph'")
+
+    @property
+    def graph(self) -> Graph:
+        return self.g
