@@ -4,25 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
-numpy = "*"
-dgl = "*"
 networkx = "*"
-sklearn = "*"
-sqlalchemy = "*"
-pytesseract = "*"
-opencv-python = "*"
-Pillow = "*"
+pandas = "*"
+pipelinex = "*"
 
 [dev-packages]
-dvc = {extras = ["gdrive"], version = "*"}
-mysql-connector-python = "*"
-black = "==19.10b0"
-flake8 = "*"
 isort = "*"
-mypy = "*"
-pytest = "*"
 yamllint = "*"
+flake8 = "*"
+mypy = "*"
+dvc = "*"
+black = "==20.8b1"
 
 [requires]
 python_version = "3.8"

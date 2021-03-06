@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="4.004" timestamp="2021-02-06T19:25:58.321166" hostname="Encycloalactica"><testcase classname="tests.e2e.test_e2e" name="test_e2e" time="0.021" /><testcase classname="tests.integration.test_graph_creator" name="test_df_to_graph" time="0.001" /><testcase classname="tests.integration.test_ocr_miner" name="test_ocr_miner" time="2.428"><failure message="assert False">def test_ocr_miner():
-        ocr_miner_obj = OCRMiner(img_path = img_path)
-        ocr_miner_obj.orchestrate()
-&gt;       assert False
-E       assert False
-
-tests/integration/test_ocr_miner.py:11: AssertionError</failure></testcase></testsuite></testsuites>

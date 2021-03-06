@@ -12,11 +12,6 @@ jobs:
       - name: Check out GitHub repo
         uses: actions/checkout@v2
 
-      - name: Setup Tesseract
-        run: |
-          sudo apt install tesseract-ocr
-          sudo apt install libtesseract-dev
-
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
@@ -33,7 +28,7 @@ jobs:
 
       - name: Test code
         run: |
-          pipenv run python -m pytest
+          pipenv run sh ./test.sh
 
       - name: Upload pytest results
         uses: actions/upload-artifact@v2
