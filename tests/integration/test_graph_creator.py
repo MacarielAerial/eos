@@ -8,4 +8,6 @@ def test_df_to_graph() -> None:
     gc_obj: GraphCreator = GraphCreator(df_input = df)
     gc_obj.create_graph()
     G: Graph = gc_obj.graph
+    assert False
     assert G.nodes.data()
+    assert G.nodes[0]["col_1"] == 1

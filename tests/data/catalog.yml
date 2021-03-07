@@ -4,4 +4,10 @@
 test_dock:
   csv_dataset:
     =: kedro.extras.datasets.pandas.CSVDataSet
-    filepath: tests/data/integration/dock/inputs/spreadspoke_scores.csv
+    filepath: tests/data/integration/dock/inputs/dummy_csv.csv
+
+
+test_e2e:
+  csv_dataset:
+    =: kedro.extras.datasets.pandas.CSVDataSet
+    filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
