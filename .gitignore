@@ -130,7 +130,6 @@ dmypy.json
 .pyre/
 
 # Private data files
-/data
 
 # MacOS system generated files
 .DS_Store
