@@ -19,16 +19,16 @@ jobs:
 
       - name: Configure Python environment
         run: |
-          pip install pipenv
-          pipenv sync --dev
+          pip install poetry
+          poetry install
 
       - name: Lint code
         run: |
-          pipenv run sh ./lint.sh
+          poetry run sh ./lint.sh
 
       - name: Test code
         run: |
-          pipenv run python -m pytest
+          poetry run sh ./test.sh
 
       - name: Upload pytest results
         uses: actions/upload-artifact@v2

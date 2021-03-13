@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "eos"
+version = "0.0.1"
+description = "a graph analysis tool of tabular data powered by graph deep learning"
+authors = ["MacarielAerial <yyu.mam2020@london.edu>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.9"
+kedro = "^0.17.1"
+pandas = "^1.2.3"
+networkx = "^2.5"
+torch = "^1.8.0"
+dgl = "^0.6.0"
+pipelinex = "^0.5.0"
+
+[tool.poetry.dev-dependencies]
+isort = "^5.7.0"
+flake8 = "^3.8.4"
+yamllint = "^1.26.0"
+mypy = "^0.812"
+pytest = "^6.2.2"
+twine = "^3.3.0"
+wheel = "^0.36.2"
+black = "19.10b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,20 +1,19 @@
 """
-Unloads tabular data from a SQL database
+Unloads tabular data from a source (e.g. a .csv file)
 """
 
 import pandas as pd
 from pandas import DataFrame
-from sqlalchemy import create_engine
 
 
 class Unloader:
     """
-    Accesses a sql database, at the moment sqlite, and loads necessary data
+    Converts data into different forms (e.g. from a .csv file to a pandas DataFrame)
     """
 
-    def __init__(self, conn_str: str):
-        self.engine = create_engine(conn_str)
+    def __init__(self) -> None:
+        pass
 
-    def get_table(self, table_name: str) -> DataFrame:
-        df = pd.read_sql(f"SELECT * FROM {table_name}", self.engine)
+    def csv_to_df(self, src: str) -> DataFrame:
+        df: DataFrame = pd.read_csv(src)
         return df

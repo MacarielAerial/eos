@@ -1,17 +1,35 @@
-from eos.orchestrator import orchestrator
-from os.path import realpath, isfile
+"""
+Tests the end-to-end workflow for the package
+"""
+
+import yaml
+
+from pipelinex import HatchDict
+from pandas import DataFrame
+from kedro.extras.datasets.pandas import CSVDataSet
 from networkx import Graph
 
-table_name: str = "user"
-path_from_wd: str = "tests/data/e2e/user.db"
+from eos.refinery.create_graph import GraphCreator
+from eos.refinery.create_nx_interface import NetworkXDataSetE
 
-def check_db_exist(path):
-    db_exist: bool = isfile(path)
-    if not db_exist:
-        raise FileNotFoundError(f"{path} does not exist")
+def test_e2e() -> None:
+    # Test-specific parameter definitions
+    path_catalog_yml: str = "tests/data/catalog.yml"
+    catalog: dict = yaml.safe_load(open(path_catalog_yml, "r"))
+    input_key: str = "test_e2e"
 
-def test_e2e():
-    check_db_exist(path = realpath(path_from_wd))
-    conn_str: str = "sqlite:///" + realpath(path_from_wd)
-    G: Graph = orchestrator(conn_str = conn_str, table_name = table_name)
-    assert isinstance(G, Graph)
+    # CSV Data access operations
+    csv_dataset: CSVDataSet = HatchDict(catalog[input_key]).get("csv_dataset")
+    csv_data: DataFrame = csv_dataset.load()
+
+    # Graph conversion
+    gc_obj: GraphCreator = GraphCreator(df_input = csv_data)
+    gc_obj.create_graph()
+
+    # NetworkX Data access operations
+    graph_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("graph_dataset")
+    graph_dataset.save(gc_obj.graph)
+
+    nx_g_reloaded: Graph = graph_dataset.load()
+
+    assert nx_g_reloaded.nodes.data()

@@ -46,6 +46,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+test-results.xml
 *.cover
 *.py,cover
 .hypothesis/
@@ -128,5 +129,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Custom
-/data
+# Private data files
+
+# MacOS system generated files
+.DS_Store

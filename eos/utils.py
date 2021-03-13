@@ -2,13 +2,26 @@
 Utility functions including IO operations
 """
 
-import pandas as pd
-from pandas import DataFrame
+from json import JSONEncoder
+from typing import Any
+
+import numpy as np
 
 
-def csv_to_df(csv_path: str) -> DataFrame:
+class NumpyEncoder(JSONEncoder):
     """
-    Return a DataFrame object by loading a csv file
+    Converts non-default data types into default data types before serialisation
     """
-    df: DataFrame = pd.read_csv(filepath_or_buffer=csv_path)
-    return df
+
+    def default(self, obj) -> Any:
+        if hasattr(obj, "to_json"):
+            return obj.to_json()
+        elif isinstance(obj, np.generic):
+            return obj.item()
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, np.int64):
+            return int(obj)
+        elif isinstance(obj, np.bool_):
+            return bool(obj)
+        return super().default(obj)
