@@ -11,3 +11,14 @@ test_e2e:
   csv_dataset:
     =: kedro.extras.datasets.pandas.CSVDataSet
     filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
+
+
+  graph_dataset:
+    =: eos.refinery.create_nx_interface.NetworkXDataSetE
+    filepath: tests/data/e2e/cache/spreadspoke_scores.json
+
+
+test_networkx_dataset_e:
+  graph_dataset:
+    =: eos.refinery.create_nx_interface.NetworkXDataSetE
+    filepath: tests/data/e2e/cache/spreadspoke_scores.json
