@@ -1,24 +1,38 @@
 # Contains input arguments for various tests
 
-
 test_dock:
   csv_dataset:
-    =: kedro.extras.datasets.pandas.CSVDataSet
+    =: eos.warehouse.csv_dataset.CSVDataSet
     filepath: tests/data/integration/dock/inputs/dummy_csv.csv
 
 
 test_e2e:
-  csv_dataset:
-    =: kedro.extras.datasets.pandas.CSVDataSet
+  node_dataset:
+    =: eos.warehouse.csv_dataset.CSVDataSet
+    filepath: tests/data/e2e/inputs/nfl_teams.csv
+
+  edge_dataset:
+    =: eos.warehouse.csv_dataset.CSVDataSet
     filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
+    e_src: team_away
+    e_dst: team_home
 
+  nx_dataset:
+    =: eos.warehouse.networkx_dataset.NetworkXDataSetE
+    filepath: tests/data/e2e/cache/nx_nfl.json
 
-  graph_dataset:
-    =: eos.refinery.create_nx_interface.NetworkXDataSetE
-    filepath: tests/data/e2e/cache/spreadspoke_scores.json
+  dgl_dataset:
+    =: eos.warehouse.dgl_dataset.DGLDataSet
+    filepath: tests/data/e2e/cache/dgl_nfl.bin
 
 
 test_networkx_dataset_e:
-  graph_dataset:
-    =: eos.refinery.create_nx_interface.NetworkXDataSetE
-    filepath: tests/data/e2e/cache/spreadspoke_scores.json
+  nx_dataset:
+    =: eos.warehouse.networkx_dataset.NetworkXDataSetE
+    filepath: tests/data/unit/outputs/dummy_networkx.json
+
+
+test_dgl_dataset:
+  dgl_dataset:
+    =: eos.warehouse.dgl_dataset.DGLDataSet
+    filepath: tests/data/unit/outputs/dummy_dgl.bin
