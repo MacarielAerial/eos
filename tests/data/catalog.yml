@@ -2,24 +2,29 @@
 
 test_dock:
   csv_dataset:
-    =: eos.warehouse.csv_dataset.CSVDataSet
+    =: eos.warehouse.csv_dataset.CSVDataSetE
     filepath: tests/data/integration/dock/inputs/dummy_csv.csv
 
 
 test_e2e:
   node_dataset:
-    =: eos.warehouse.csv_dataset.CSVDataSet
+    =: eos.warehouse.csv_dataset.CSVDataSetE
     filepath: tests/data/e2e/inputs/nfl_teams.csv
 
   edge_dataset:
-    =: eos.warehouse.csv_dataset.CSVDataSet
+    =: eos.warehouse.csv_dataset.CSVDataSetE
     filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
-    e_src: team_away
-    e_dst: team_home
+    df_attrs:
+      edge_src: team_away
+      edge_dst: team_home
 
-  nx_dataset:
+  nx_node_dataset:
     =: eos.warehouse.networkx_dataset.NetworkXDataSetE
-    filepath: tests/data/e2e/cache/nx_nfl.json
+    filepath: tests/data/e2e/cache/nx_node_nfl.json
+
+  nx_graph_dataset:
+    =: eos.warehouse.networkx_dataset.NetworkXDataSetE
+    filepath: tests/data/e2e/cache/nx_graph_nfl.json
 
   dgl_dataset:
     =: eos.warehouse.dgl_dataset.DGLDataSet

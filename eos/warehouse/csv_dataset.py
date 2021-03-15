@@ -28,7 +28,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""``CSVDataSet`` loads/saves data from/to a CSV file using an underlying
+"""``CSVDataSetE`` loads/saves data from/to a CSV file using an underlying
 filesystem (e.g.: local, S3, GCS). It uses pandas to handle the CSV file.
 """
 from copy import deepcopy
@@ -46,21 +46,21 @@ from kedro.io.core import (
 )
 
 
-class CSVDataSet(AbstractVersionedDataSet):
-    """``CSVDataSet`` loads/saves data from/to a CSV file using an underlying
+class CSVDataSetE(AbstractVersionedDataSet):
+    """``CSVDataSetE`` loads/saves data from/to a CSV file using an underlying
     filesystem (e.g.: local, S3, GCS). It uses pandas to handle the CSV file.
 
     Example:
     ::
 
-        >>> from kedro.extras.datasets.pandas import CSVDataSet
+        >>> from eos.warehouse.csv_dataset_e import CSVDataSetE
         >>> import pandas as pd
         >>>
         >>> data = pd.DataFrame({'col1': [1, 2], 'col2': [4, 5],
         >>>                      'col3': [5, 6]})
         >>>
-        >>> # data_set = CSVDataSet(filepath="gcs://bucket/test.csv")
-        >>> data_set = CSVDataSet(filepath="test.csv")
+        >>> # data_set = CSVDataSetE(filepath="gcs://bucket/test.csv")
+        >>> data_set = CSVDataSetE(filepath="test.csv")
         >>> data_set.save(data)
         >>> reloaded = data_set.load()
         >>> assert data.equals(reloaded)
@@ -79,10 +79,9 @@ class CSVDataSet(AbstractVersionedDataSet):
         version: Optional[Version] = None,
         credentials: Optional[Dict[str, Any]] = None,
         fs_args: Optional[Dict[str, Any]] = None,
-        e_src: Optional[str] = None,
-        e_dst: Optional[str] = None,
+        df_attrs: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Creates a new instance of ``CSVDataSet`` pointing to a concrete CSV file
+        """Creates a new instance of ``CSVDataSetE`` pointing to a concrete CSV file
         on a specific filesystem.
 
         Args:
@@ -112,8 +111,8 @@ class CSVDataSet(AbstractVersionedDataSet):
                 https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem.open
                 All defaults are preserved, except `mode`, which is set to `r` when loading
                 and to `w` when saving.
-            e_src: Name of the column as source edge ids
-            e_dst: Name of the column as destination edge ids
+            df_attrs: Dictionary that is passed onto pandas.DataFrame.attrs
+                as metadata. Typically used to store column names for edge ids and attributes
         """
         _fs_args = deepcopy(fs_args) or {}
         _fs_open_args_load = _fs_args.pop("open_args_load", {})
@@ -147,8 +146,7 @@ class CSVDataSet(AbstractVersionedDataSet):
         self._fs_open_args_load = _fs_open_args_load
         self._fs_open_args_save = _fs_open_args_save
 
-        self.e_src = e_src
-        self.e_dst = e_dst
+        self.df_attrs = df_attrs
 
     def _describe(self) -> Dict[str, Any]:
         return dict(
@@ -163,12 +161,15 @@ class CSVDataSet(AbstractVersionedDataSet):
         load_path = get_filepath_str(self._get_load_path(), self._protocol)
 
         with self._fs.open(load_path, **self._fs_open_args_load) as fs_file:
-            return pd.read_csv(fs_file, **self._load_args)
+            data: pd.DataFrame = pd.read_csv(fs_file, **self._load_args)
+            data.attrs = self.df_attrs if self.df_attrs else {}
+            return data
 
     def _save(self, data: pd.DataFrame) -> None:
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
 
         with self._fs.open(save_path, **self._fs_open_args_save) as fs_file:
+            data.attrs = self.df_attrs
             data.to_csv(path_or_buf=fs_file, **self._save_args)
 
         self._invalidate_cache()

@@ -33,7 +33,7 @@ class GraphCreator(object):
         container_attrs_null: Dict[str, None] = dict.fromkeys(container_attr_keys)
         print(
             "GraphCreator: Adding the following list of node attributes "
-            f"with null values to the graph:\n{container_attrs_null}"
+            f"with null values to the graph:\n{list(container_attrs_null.keys())}"
         )
         mapping_nid_attr: Dict[Any, Dict[str, None]] = {
             nid: container_attrs_null for nid in self.g.nodes
@@ -46,7 +46,7 @@ class GraphCreator(object):
         """
         print(
             f"GraphCreator: Populating {self.g.number_of_nodes()} nodes "
-            f"with {len(self.df_input.index)} attributes each in the graph "
+            f"with {len(self.df_input.columns)} attributes each in the graph "
             f"with {self.df_input.shape[0] * self.df_input.shape[1]} cells from the dataframe"
         )
         n_vals_added: int = 0
