@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 import numpy as np
-from networkx import Graph
+from networkx import Graph, MultiDiGraph
 from pandas import DataFrame
 
 
@@ -26,19 +26,20 @@ class NodeLinker:
 
         self._check_metadata()
 
-        self.g = deepcopy(g_input)
+        self.g = MultiDiGraph(deepcopy(g_input))
+        self.df_mod = deepcopy(df_input)
 
     def _add_eids(self) -> None:
         """
         Creates empty edges
         """
         container_eids = Utils.cols_to_e_tuples(
-            e_src=list(self.df_input[self.e_src]), e_dst=list(self.df_input[self.e_dst])
+            e_src=list(self.df_input[self.e_src]),
+            e_dst=list(self.df_input[self.e_dst]),
+            keys=list(self.df_input.index),
         )
         print(f"NodeLinker: Adding {len(container_eids)} edges to the graph")
         self.g.add_edges_from(container_eids)
-        print(self.g.nodes)
-        assert False
 
     def _add_attr_keys(self) -> None:
         """
@@ -51,7 +52,7 @@ class NodeLinker:
             f"with null values to the graph:\n{list(container_attrs_null.keys())}"
         )
         mapping_eid_attr: Dict[Any, Dict[str, None]] = {
-            (u, v): container_attrs_null for u, v in self.g.edges
+            (u, v, k): container_attrs_null for u, v, k in self.g.edges
         }
         nx.set_edge_attributes(self.g, mapping_eid_attr)
 
@@ -60,18 +61,19 @@ class NodeLinker:
         Populates edge attribue dictionaries with values
         """
         print(
-            f"NodeLinker: Populating {self.g.number_of_edges()} edges "
+            f"NodeLinker: Populating {len(self.g.out_edges)} edges "
             f"with {len(self.e_attrs)} attributes each in the graph "
             f"with {np.prod(self.df_input.loc[:, self.e_attrs].shape)} "
             "cells from the dataframe"
         )
+        df_input_attrs: DataFrame = self.df_input.set_index(
+            [self.e_src, self.e_dst, self.df_input.index]
+        )
         n_vals_added: int = 0
-        for u, v, attrs in self.g.edges.data():
+        for u, v, k, attrs in self.g.edges.data(keys=True):
             for k_attr in attrs.keys():
-                v_attr: Any = self.df_input.set_index([self.e_src, self.e_dst]).loc[
-                    (u, v), k_attr
-                ]
-                self.g.edges[u, v][k_attr] = v_attr
+                v_attr: Any = df_input_attrs.loc[(u, v, k), k_attr]
+                self.g.edges[u, v, k][k_attr] = v_attr
                 n_vals_added += 1
         print(
             f"NodeLinker: {n_vals_added} edge attribute values are appended "
@@ -95,8 +97,12 @@ class NodeLinker:
                 for col in self.df_input.columns
                 if col not in (self.e_src, self.e_dst)
             ]
-            print(f"NodeLinker: {self.e_src} column is the edge source and {self.e_dst} is the edge destination")
-            print(f"NodeLinker: The following list of columns is the edge attribute columns:\n{self.e_attrs}")
+            print(
+                f"NodeLinker: {self.e_src} column is the edge source and {self.e_dst} is the edge destination"
+            )
+            print(
+                f"NodeLinker: The following list of columns is the edge attribute columns:\n{self.e_attrs}"
+            )
 
     def link_node(self) -> None:
         print("NodeLinker: Linking nodes with the supplied DataFrame")
@@ -115,10 +121,15 @@ class Utils:
         pass
 
     @staticmethod
-    def cols_to_e_tuples(e_src: List[Any], e_dst: List[Any]) -> List[Tuple[Any, Any]]:
+    def cols_to_e_tuples(
+        e_src: List[Any], e_dst: List[Any], keys: List[Any]
+    ) -> List[Tuple[Any, Any, Any]]:
         """
         Converts two lists of edge id column arrays and a list of index array
         to a list of edge id tuples
         """
-        ebunch: List[Tuple[Any, Any]] = [(u, v) for u, v in zip(e_src, e_dst)]
+        ebunch: List[Tuple[Any, Any, Any]] = []
+        for u, v, k in zip(e_src, e_dst, keys):
+            eid: Tuple[Any, Any, Any] = (u, v, k)
+            ebunch.append(eid)
         return ebunch

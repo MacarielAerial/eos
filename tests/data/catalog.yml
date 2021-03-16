@@ -10,6 +10,8 @@ test_e2e:
   node_dataset:
     =: eos.warehouse.csv_dataset.CSVDataSetE
     filepath: tests/data/e2e/inputs/nfl_teams.csv
+    df_attrs:
+      node_id: team_name
 
   edge_dataset:
     =: eos.warehouse.csv_dataset.CSVDataSetE

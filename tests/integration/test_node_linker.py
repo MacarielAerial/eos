@@ -19,4 +19,4 @@ def test_df_to_edge() -> None:
     G: Graph = nl_obj.graph
 
     assert G.nodes.data()
-    assert G.edges[1, 4]["col_3"] == 7
+    assert G.edges[1, 4, 0]["col_3"] == 7
