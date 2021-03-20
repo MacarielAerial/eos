@@ -80,6 +80,15 @@ class NodeLinker:
             "from the dataframe to the graph"
         )
 
+    def _agg_edges(self) -> None:
+        """
+        Aggregates multiple edges between the same pair of nodes together into one edge
+        """
+        print(
+            "NodeLinker: Edge aggregation is disabled to preserve MultiDiGraph structure"
+        )
+        pass
+
     def _check_metadata(self) -> None:
         """
         Checks if necessary metadata exists in input dataframe
@@ -109,6 +118,7 @@ class NodeLinker:
         self._add_eids()
         self._add_attr_keys()
         self._add_attr_vals()
+        self._agg_edges()
         print("NodeLinker: Created the graph accessible by property 'graph'")
 
     @property
