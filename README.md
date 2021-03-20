@@ -7,3 +7,11 @@ Auxiliary goals include analytics and inference of graphic data.
 
 ## Current State
 The first stage of Eos is to create a graph from a stream of data without either importing nor exporting a graph.  
+
+## FeatureEncoder
+
+## GraphCreator
+
+## NodeLinker
+
+## Feature Concatenator
