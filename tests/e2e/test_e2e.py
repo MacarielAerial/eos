@@ -6,11 +6,13 @@ import yaml
 
 from pipelinex import HatchDict
 from pandas import DataFrame
-from kedro.extras.datasets.pandas import CSVDataSet
 from networkx import Graph
 
 from eos.refinery.create_graph import GraphCreator
-from eos.refinery.create_nx_interface import NetworkXDataSetE
+from eos.refinery.link_node import NodeLinker
+
+from eos.warehouse.csv_dataset import CSVDataSetE
+from eos.warehouse.networkx_dataset import NetworkXDataSetE
 
 def test_e2e() -> None:
     # Test-specific parameter definitions
@@ -19,17 +21,34 @@ def test_e2e() -> None:
     input_key: str = "test_e2e"
 
     # CSV Data access operations
-    csv_dataset: CSVDataSet = HatchDict(catalog[input_key]).get("csv_dataset")
-    csv_data: DataFrame = csv_dataset.load()
+    node_dataset: CSVDataSetE = HatchDict(catalog[input_key]).get("node_dataset")
+    node_data: DataFrame = node_dataset.load()
 
-    # Graph conversion
-    gc_obj: GraphCreator = GraphCreator(df_input = csv_data)
+    edge_dataset: CSVDataSetE = HatchDict(catalog[input_key]).get("edge_dataset")
+    edge_data: DataFrame = edge_dataset.load()
+
+    # Node population
+    gc_obj: GraphCreator = GraphCreator(df_input = node_data)
     gc_obj.create_graph()
 
-    # NetworkX Data access operations
-    graph_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("graph_dataset")
-    graph_dataset.save(gc_obj.graph)
+    # Node: NetworkX Data access operations
+    nx_node_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("nx_node_dataset")
+    nx_node_dataset.save(gc_obj.g)
 
-    nx_g_reloaded: Graph = graph_dataset.load()
+    nx_node_g_reloaded: Graph = nx_node_dataset.load()
 
-    assert nx_g_reloaded.nodes.data()
+    # Edge linking
+    nl_obj: NodeLinker = NodeLinker(g_input = nx_node_g_reloaded,
+                                    df_input = edge_data)
+    nl_obj.link_node()
+
+    # Node with edge: NetworkX Data access operations
+    nx_graph_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("nx_graph_dataset")
+    nx_graph_dataset.save(nl_obj.g)
+
+    nx_graph_g_reloaded: Graph = nx_graph_dataset.load()
+
+    # DGL Graph conversion
+
+    assert nx_graph_g_reloaded.nodes.data()
+    assert nx_graph_g_reloaded.edges.data()
