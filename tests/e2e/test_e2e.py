@@ -7,12 +7,17 @@ import yaml
 from pipelinex import HatchDict
 from pandas import DataFrame
 from networkx import Graph
+from dgl import from_networkx
+from dgl.heterograph import DGLHeteroGraph
 
 from eos.refinery.create_graph import GraphCreator
 from eos.refinery.link_node import NodeLinker
 
+from eos.factory.concat_feature import FeatureConcatenator
+
 from eos.warehouse.csv_dataset import CSVDataSetE
 from eos.warehouse.networkx_dataset import NetworkXDataSetE
+from eos.warehouse.dgl_dataset import DGLDataSet
 
 def test_e2e() -> None:
     # Test-specific parameter definitions
@@ -48,7 +53,26 @@ def test_e2e() -> None:
 
     nx_graph_g_reloaded: Graph = nx_graph_dataset.load()
 
-    # DGL Graph conversion
+    # Graph feature concatenation
+    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input = nx_graph_g_reloaded)
+    fe_obj.concat_n_attrs()
+    fe_obj.concat_e_attrs()
 
-    assert nx_graph_g_reloaded.nodes.data()
-    assert nx_graph_g_reloaded.edges.data()
+    # Concatenated graph: NetworkX Data access operations
+    nx_concat_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("nx_concat_dataset")
+    nx_concat_dataset.save(fe_obj.g)
+
+    nx_concat_g_reloaded: Graph = nx_concat_dataset.load()
+
+    # DGL Graph conversion
+    dgl_g: DGLHeteroGraph = from_networkx(nx_concat_g_reloaded, node_attrs = ["nfeat"], edge_attrs = ["efeat"])
+
+    # DGL Data access operations
+    dgl_dataset: DGLDataSet = HatchDict(catalog[input_key]).get("dgl_dataset")
+    dgl_dataset.save(dgl_g)
+
+    glist, label_dict = dgl_dataset.load()
+    dgl_g_reloaded: DGLHeteroGraph = glist[0]
+
+    assert dgl_g_reloaded.ndata
+    assert dgl_g_reloaded.edata
