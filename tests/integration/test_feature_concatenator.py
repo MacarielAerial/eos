@@ -1,9 +1,10 @@
 """
-Tests whether FeatureConcatenator can correctly aggregate all assumed-to-be numeric attributes into one attribute
+Tests whether FeatureConcatenator can correctly aggregate
+all assumed-to-be numeric attributes into one attribute
 """
 
 import random
-from typing import List, Dict, Any
+from typing import Any, Dict
 
 import networkx as nx
 from networkx import MultiDiGraph
@@ -11,21 +12,20 @@ from networkx import MultiDiGraph
 from eos.factory.concat_feature import FeatureConcatenator
 
 
-
 def test_feature_concatenator():
-    cont_attrs: List[str] = ["feat_1", "feat_2"]
-    cat_attrs: List[str] = ["feat_3", "feat_4"]
-    g_input: MultiDiGraph = MultiDiGraph({0: {1: {"weight": 0.2}}, 1: {0: {"weight": 0.8}}})
-    g_input.add_edge(0, 1, weight = 0.3)
+    # Generate dummy data
+    g_input: MultiDiGraph = MultiDiGraph(
+        {0: {1: {"weight": 0.2}}, 1: {0: {"weight": 0.8}}}
+    )
+    g_input.add_edge(0, 1, weight=0.3)
     node_attrs: Dict[int, Dict[str, Any]] = {
-                           0: {"feat_1": 10.0, "feat_2": 20, "feat_3": 1, "feat_4": random.uniform(-1, 1)},
-                           1: {"feat_1": 11.0, "feat_2": 21, "feat_3": 0, "feat_4": random.uniform(-1, 1)}
-                           }
+        0: {"feat_1": 10.0, "feat_2": 20, "feat_3": 1, "feat_4": random.uniform(-1, 1)},
+        1: {"feat_1": 11.0, "feat_2": 21, "feat_3": 0, "feat_4": random.uniform(-1, 1)},
+    }
     nx.set_node_attributes(g_input, node_attrs)
 
-    print(g_input.nodes.data())
-    print(g_input.edges.data())
-    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input = g_input)
+    # Logic
+    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input=g_input)
     fe_obj.concat_n_attrs()
     fe_obj.concat_e_attrs()
 
