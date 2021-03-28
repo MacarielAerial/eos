@@ -1,4 +1,16 @@
-# This file is modified by the author of eos
+"""
+Includes PyTorch DataLoader dataset definition
+"""
+
+from pathlib import Path, PurePosixPath
+
+from numpy import ndarray
+from pandas import DataFrame
+from torch.utils.data import Dataset, DataLoader
+from kedro.io import AbstractDataSet
+
+
+# The file is modified by the author of eos
 
 # Copyright 2021 QuantumBlack Visual Analytics Limited
 #
@@ -28,15 +40,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""``CSVDataSetE`` loads/saves data from/to a CSV file using an underlying
-filesystem (e.g.: local, S3, GCS). It uses pandas to handle the CSV file.
+"""``DataLoaderDataSet`` loads/saves DataLoader from/to a Pickle file using an underlying
+filesystem (e.g.: local, S3, GCS). The underlying functionality is supported by
+the ``pickle``, ``joblib``, and ``compress_pickle`` libraries, so it supports
+all allowed options for loading and saving pickle files.
 """
+import pickle
 from copy import deepcopy
 from pathlib import PurePosixPath
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import fsspec
-import pandas as pd
+
 from kedro.io.core import (
     AbstractVersionedDataSet,
     DataSetError,
@@ -45,58 +60,88 @@ from kedro.io.core import (
     get_protocol_and_path,
 )
 
+try:
+    import joblib
+except ImportError:  # pragma: no cover
+    joblib = None
 
-class CSVDataSetE(AbstractVersionedDataSet):
-    """``CSVDataSetE`` loads/saves data from/to a CSV file using an underlying
-    filesystem (e.g.: local, S3, GCS). It uses pandas to handle the CSV file.
+try:
+    import compress_pickle
+except ImportError:  # pragma: no cover
+    compress_pickle = None
+
+
+class DataLoaderDataSet(AbstractVersionedDataSet):
+    """``DataLoaderDataSet`` loads/saves DataLoader from/to a Pickle file using an underlying
+    filesystem (e.g.: local, S3, GCS). The underlying functionality is supported by
+    the ``pickle`` and ``joblib`` libraries, so it supports all allowed options for
+    loading and saving pickle files.
 
     Example:
     ::
 
-        >>> from eos.warehouse.csv_dataset import CSVDataSetE
+        >>> from eos.warehouse.dataloader_dataset import DataLoaderDataSet
+        >>> from eos.warehouse.dataloader_dataset import TorchDataset
+        >>>
         >>> import pandas as pd
+        >>> from torch.utils.data import DataLoader
         >>>
-        >>> data = pd.DataFrame({'col1': [1, 2], 'col2': [4, 5],
+        >>> df = pd.DataFrame({'col1': [1, 2], 'col2': [4, 5],
         >>>                      'col3': [5, 6]})
+        >>> torch_dataset = TorchDataset(df = df)
+        >>> data = DataLoader(torch_dataset)
         >>>
-        >>> # data_set = CSVDataSetE(filepath="gcs://bucket/test.csv")
-        >>> data_set = CSVDataSetE(filepath="test.csv")
+        >>> # data_set = DataLoaderDataSet(filepath="gcs://bucket/test.pkl")
+        >>> data_set = DataLoaderDataSet(filepath="test.pkl", backend="pickle")
         >>> data_set.save(data)
         >>> reloaded = data_set.load()
-        >>> assert data.equals(reloaded)
+        >>> assert data.dataset.equal(reloaded)
 
+        >>> # Add "compress_pickle[lz4]" to requirements.txt
+        >>> data_set = DataLoaderDataSet(filepath="test.pickle.lz4",
+        >>>                          backend="compress_pickle",
+        >>>                          load_args={"compression":"lz4"},
+        >>>                          save_args={"compression":"lz4"})
+        >>> data_set.save(data)
+        >>> reloaded = data_set.load()
+        >>> assert data.dataset.equal(reloaded)
     """
 
     DEFAULT_LOAD_ARGS = {}  # type: Dict[str, Any]
-    DEFAULT_SAVE_ARGS = {"index": False}  # type: Dict[str, Any]
+    DEFAULT_SAVE_ARGS = {}  # type: Dict[str, Any]
+    BACKENDS = {"pickle": pickle, "joblib": joblib, "compress_pickle": compress_pickle}
 
     # pylint: disable=too-many-arguments
     def __init__(
         self,
         filepath: str,
-        load_args: Optional[Dict[str, Any]] = None,
-        save_args: Optional[Dict[str, Any]] = None,
-        version: Optional[Version] = None,
-        credentials: Optional[Dict[str, Any]] = None,
-        fs_args: Optional[Dict[str, Any]] = None,
-        df_attrs: Optional[Dict[str, Any]] = None,
+        backend: str = "pickle",
+        load_args: Dict[str, Any] = None,
+        save_args: Dict[str, Any] = None,
+        version: Version = None,
+        credentials: Dict[str, Any] = None,
+        fs_args: Dict[str, Any] = None,
     ) -> None:
-        """Creates a new instance of ``CSVDataSetE`` pointing to a concrete CSV file
-        on a specific filesystem.
+        """Creates a new instance of ``DataLoaderDataSet`` pointing to a concrete Pickle
+        file on a specific filesystem. ``DataLoaderDataSet`` supports two backends to
+        serialize/deserialize objects: `pickle` and `joblib`.
 
         Args:
-            filepath: Filepath in POSIX format to a CSV file prefixed with a protocol like `s3://`.
-                If prefix is not provided, `file` protocol (local filesystem) will be used.
+            filepath: Filepath in POSIX format to a Pickle file prefixed with a protocol like
+                `s3://`. If prefix is not provided, `file` protocol (local filesystem) will be used.
                 The prefix should be any protocol supported by ``fsspec``.
                 Note: `http(s)` doesn't support versioning.
-            load_args: Pandas options for loading CSV files.
-                Here you can find all available arguments:
-                https://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_csv.html
+            backend: Backend to use, must be one of ['pickle', 'joblib']. Defaults to 'pickle'.
+            load_args: Pickle options for loading pickle files.
+                Here you can find all available arguments for different backends:
+                pickle.load: https://docs.python.org/3/library/pickle.html#pickle.load
+                joblib.load: https://joblib.readthedocs.io/en/latest/generated/joblib.load.html
                 All defaults are preserved.
-            save_args: Pandas options for saving CSV files.
-                Here you can find all available arguments:
-                https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_csv.html
-                All defaults are preserved, but "index", which is set to False.
+            save_args: Pickle options for saving pickle files.
+                Here you can find all available arguments for different backends:
+                pickle.dump: https://docs.python.org/3/library/pickle.html#pickle.dump
+                joblib.dump: https://joblib.readthedocs.io/en/latest/generated/joblib.dump.html
+                All defaults are preserved.
             version: If specified, should be an instance of
                 ``kedro.io.core.Version``. If its ``load`` attribute is
                 None, the latest version will be loaded. If its ``save``
@@ -109,11 +154,24 @@ class CSVDataSetE(AbstractVersionedDataSet):
                 `open_args_load` and `open_args_save`.
                 Here you can find all available arguments for `open`:
                 https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem.open
-                All defaults are preserved, except `mode`, which is set to `r` when loading
-                and to `w` when saving.
-            df_attrs: Dictionary that is passed onto pandas.DataFrame.attrs
-                as metadata. Typically used to store column names for edge ids and attributes
+                All defaults are preserved, except `mode`, which is set to `wb` when saving.
+
+        Raises:
+            ValueError: If ``backend`` is not one of ['pickle', 'joblib'].
+            ImportError: If ``backend`` library could not be imported.
         """
+        if backend not in self.BACKENDS:
+            raise ValueError(
+                f"'backend' should be one of {list(self.BACKENDS.keys())}, "
+                f"got '{backend}'."
+            )
+
+        if not self.BACKENDS[backend]:
+            raise ImportError(
+                f"Selected backend '{backend}' could not be "
+                "imported. Make sure it is installed."
+            )
+
         _fs_args = deepcopy(fs_args) or {}
         _fs_open_args_load = _fs_args.pop("open_args_load", {})
         _fs_open_args_save = _fs_args.pop("open_args_save", {})
@@ -133,6 +191,8 @@ class CSVDataSetE(AbstractVersionedDataSet):
             glob_function=self._fs.glob,
         )
 
+        self._backend = backend
+
         # Handle default load and save arguments
         self._load_args = deepcopy(self.DEFAULT_LOAD_ARGS)
         if load_args is not None:
@@ -141,36 +201,39 @@ class CSVDataSetE(AbstractVersionedDataSet):
         if save_args is not None:
             self._save_args.update(save_args)
 
-        _fs_open_args_save.setdefault("mode", "w")
-        _fs_open_args_save.setdefault("newline", "")
+        _fs_open_args_save.setdefault("mode", "wb")
         self._fs_open_args_load = _fs_open_args_load
         self._fs_open_args_save = _fs_open_args_save
 
-        self.df_attrs = df_attrs
 
     def _describe(self) -> Dict[str, Any]:
         return dict(
             filepath=self._filepath,
+            backend=self._backend,
             protocol=self._protocol,
             load_args=self._load_args,
             save_args=self._save_args,
             version=self._version,
         )
 
-    def _load(self) -> pd.DataFrame:
+    def _load(self) -> DataLoader:
         load_path = get_filepath_str(self._get_load_path(), self._protocol)
 
         with self._fs.open(load_path, **self._fs_open_args_load) as fs_file:
-            data: pd.DataFrame = pd.read_csv(fs_file, **self._load_args)
-            data.attrs = self.df_attrs if self.df_attrs else {}
-            return data
+            return self.BACKENDS[self._backend].load(
+                fs_file, **self._load_args
+            )  # nosec
 
-    def _save(self, data: pd.DataFrame) -> None:
+    def _save(self, data: DataLoader) -> None:
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
 
         with self._fs.open(save_path, **self._fs_open_args_save) as fs_file:
-            data.attrs = self.df_attrs if self.df_attrs else {}
-            data.to_csv(path_or_buf=fs_file, **self._save_args)
+            try:
+                self.BACKENDS[self._backend].dump(data, fs_file, **self._save_args)
+            except Exception as exc:
+                raise DataSetError(
+                    f"{data.__class__} was not serialized due to: {exc}"
+                ) from exc
 
         self._invalidate_cache()
 
@@ -180,7 +243,7 @@ class CSVDataSetE(AbstractVersionedDataSet):
         except DataSetError:
             return False
 
-        return bool(self._fs.exists(load_path))
+        return self._fs.exists(load_path)
 
     def _release(self) -> None:
         super()._release()
