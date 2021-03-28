@@ -3,7 +3,7 @@ Utility functions including IO operations
 """
 
 from json import JSONEncoder
-from typing import Dict, Any
+from typing import Any, Dict
 
 import numpy as np
 
@@ -25,6 +25,7 @@ class NumpyEncoder(JSONEncoder):
         elif isinstance(obj, np.bool_):
             return bool(obj)
         return super().default(obj)
+
 
 # Copyright 2021 QuantumBlack Visual Analytics Limited
 #

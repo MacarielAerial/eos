@@ -2,23 +2,81 @@
 
 node:
   type: eos.warehouse.csv_dataset.CSVDataSetE
-  filepath: working_dir/raw_input/node/node.csv
+  filepath: tests/data/e2e/inputs/nfl_teams.csv
   df_attrs:
-    cat_feats: [cat_1, cat_2]
-    cont_feats: [cont_1]
+    node_id: team_name
+    cat_feats: [team_conference, team_name]
 
-df_ord_encoded:
+edge:
   type: eos.warehouse.csv_dataset.CSVDataSetE
-  filepath: working_dir/df_ord_encoded/df_ord_encoded.csv
+  filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
+  df_attrs:
+    edge_src: team_away
+    edge_dst: team_home
+    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral, team_home, team_away]
+    cont_feats: [score_home, score_away]
+
+node_ord_encoded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE 
+  filepath: tests/data/e2e/cache/node_ord_encoded.csv
+  df_attrs:
+    cat_feats: [team_conference, team_name]
 
 node_cat_mapping:
+  type: kedro.extras.datasets.json.JSONDataSet
+  filepath: tests/data/e2e/cache/node_cat_mapping.json
+
+edge_ord_encoded:
   type: eos.warehouse.csv_dataset.CSVDataSetE
-  filepath: working_dir/category/node_cat_mapping.csv
+  filepath: tests/data/e2e/cache/edge_ord_encoded.csv
+  df_attrs:
+    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral, team_home, team_away]
+    cont_feats: [score_home, score_away]
 
-dataloader_auto:
+edge_cat_mapping:
+  type: kedro.extras.datasets.json.JSONDataSet
+  filepath: tests/data/e2e/cache/edge_cat_mapping.json
+
+node_dataloader_auto:
   type: eos.warehouse.dataloader_dataset.DataLoaderDataSet
-  filepath: working_dir/dataloader_auto/dataloader_auto.pkl
+  filepath: tests/data/e2e/cache/node_dataloader_auto.pkl
 
-model_autoencoder:
+edge_dataloader_auto:
+  type: eos.warehouse.dataloader_dataset.DataLoaderDataSet
+  filepath: tests/data/e2e/cache/edge_dataloader_auto.pkl
+
+node_model_autoencoder:
   type: eos.warehouse.autoencoder_dataset.AutoEncoderDataSet
-  filepath: working_dir/model_autoencoder/model_autoencoder.pt
+  filepath: tests/data/e2e/cache/node_model_autoencoder.pt
+  load_args:
+    input_shape: 2
+
+edge_model_autoencoder:
+  type: eos.warehouse.autoencoder_dataset.AutoEncoderDataSet
+  filepath: tests/data/e2e/cache/edge_model_autoencoder.pt
+  load_args:
+    input_shape: 9
+
+node_embedded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/cache/node_embedded.csv
+
+edge_embedded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/cache/edge_embedded.csv
+
+nx_node_dataset:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/nx_node_nfl.json
+
+nx_graph_dataset:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/nx_graph_nfl.json
+
+nx_concat_dataset:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/nx_concat_nfl.json
+
+dgl_dataset:
+  type: eos.warehouse.dgl_dataset.DGLDataSet
+  filepath: tests/data/e2e/cache/dgl_nfl.bin

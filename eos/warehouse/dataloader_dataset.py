@@ -4,11 +4,10 @@ Includes PyTorch DataLoader dataset definition
 
 from pathlib import Path, PurePosixPath
 
+from kedro.io import AbstractDataSet
 from numpy import ndarray
 from pandas import DataFrame
-from torch.utils.data import Dataset, DataLoader
-from kedro.io import AbstractDataSet
-
+from torch.utils.data import DataLoader, Dataset
 
 # The file is modified by the author of eos
 
@@ -51,7 +50,6 @@ from pathlib import PurePosixPath
 from typing import Any, Dict
 
 import fsspec
-
 from kedro.io.core import (
     AbstractVersionedDataSet,
     DataSetError,
@@ -205,7 +203,6 @@ class DataLoaderDataSet(AbstractVersionedDataSet):
         self._fs_open_args_load = _fs_open_args_load
         self._fs_open_args_save = _fs_open_args_save
 
-
     def _describe(self) -> Dict[str, Any]:
         return dict(
             filepath=self._filepath,
@@ -220,9 +217,10 @@ class DataLoaderDataSet(AbstractVersionedDataSet):
         load_path = get_filepath_str(self._get_load_path(), self._protocol)
 
         with self._fs.open(load_path, **self._fs_open_args_load) as fs_file:
-            return self.BACKENDS[self._backend].load(
+            dataloader: DataLoader = self.BACKENDS[self._backend].load(
                 fs_file, **self._load_args
             )  # nosec
+            return dataloader
 
     def _save(self, data: DataLoader) -> None:
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
@@ -243,7 +241,7 @@ class DataLoaderDataSet(AbstractVersionedDataSet):
         except DataSetError:
             return False
 
-        return self._fs.exists(load_path)
+        return bool(self._fs.exists(load_path))
 
     def _release(self) -> None:
         super()._release()

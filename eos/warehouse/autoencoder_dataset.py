@@ -2,8 +2,8 @@
 Defines data interface for IO operations on AutoEncoder model alone
 """
 
-from typing import Dict, Any, Optional
 from pathlib import Path, PurePosixPath
+from typing import Any, Dict, Optional
 
 import torch
 from kedro.io import AbstractDataSet
@@ -12,9 +12,12 @@ from eos.warehouse.autoencoder import AutoEncoder
 
 
 class AutoEncoderDataSet(AbstractDataSet):
-    def __init__(self, filepath: str,
-                       load_args: Optional[Dict[str, Any]]=None,
-                       save_args: Optional[Dict[str, Any]]=None) -> None:
+    def __init__(
+        self,
+        filepath: str,
+        load_args: Optional[Dict[str, Any]] = None,
+        save_args: Optional[Dict[str, Any]] = None,
+    ) -> None:
         self._filepath = PurePosixPath(filepath)
         self._load_args = load_args if load_args else {}
         self._save_args = save_args if save_args else {}
@@ -29,9 +32,11 @@ class AutoEncoderDataSet(AbstractDataSet):
         torch.save(autoencoder.state_dict(), str(self._filepath), **self._save_args)
 
     def _exists(self) -> bool:
-        path = self._get_load_path()
-        return Path(path.as_posix()).exists()
+        return Path(self._filepath.as_posix()).exists()
 
     def _describe(self) -> Dict[str, Any]:
-        return dict(filepath=self._filepath, load_args=self._load_args,
-                                             save_args=self._save_args)
+        return dict(
+            filepath=self._filepath,
+            load_args=self._load_args,
+            save_args=self._save_args,
+        )

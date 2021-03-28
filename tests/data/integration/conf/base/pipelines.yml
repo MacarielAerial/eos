@@ -1,0 +1,26 @@
+# Define Pipelne objects
+
+autoencoder_pipeline:
+  =: pipelinex.FlexiblePipeline
+  module: eos.refinery.embed_table
+  decorator: pipelinex.log_time
+  nodes:
+    - inputs: node
+      func: ordinally_encode_table
+      outputs: [df_ord_encoded, node_cat_mapping]
+
+    - inputs: df_ord_encoded
+      func: df_to_dataloader
+      outputs: dataloader_auto
+
+    - inputs:
+        dataloader: dataloader_auto
+        params: params:train_autoencoder
+      func: train_autoencoder
+      outputs: model_autoencoder
+
+# Define ConfigLoader object
+
+conf_loader:
+  =: kedro.config.ConfigLoader
+  conf_paths: (["eos/conf/base", "eos/conf/local"])

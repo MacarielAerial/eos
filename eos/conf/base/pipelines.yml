@@ -1,23 +1,49 @@
 # Define Pipelne objects
 
-autoencoder_pipeline:
+e2e_pipeline:
   =: pipelinex.FlexiblePipeline
   module: eos.refinery.embed_table
   decorator: pipelinex.log_time
   nodes:
     - inputs: node
       func: ordinally_encode_table
-      outputs: [df_ord_encoded, node_cat_mapping]
+      outputs: [node_ord_encoded, node_cat_mapping]
 
-    - inputs: df_ord_encoded
+    - inputs: edge
+      func: ordinally_encode_table
+      outputs: [edge_ord_encoded, edge_cat_mapping]
+
+    - inputs: node_ord_encoded
       func: df_to_dataloader
-      outputs: dataloader_auto
+      outputs: node_dataloader_auto
+
+    - inputs: edge_ord_encoded
+      func: df_to_dataloader
+      outputs: edge_dataloader_auto
 
     - inputs:
-        dataloader: dataloader_auto
+        dataloader: node_dataloader_auto
         params: params:train_autoencoder
       func: train_autoencoder
-      outputs: model_autoencoder
+      outputs: node_model_autoencoder
+
+    - inputs:
+        dataloader: edge_dataloader_auto
+        params: params:train_autoencoder
+      func: train_autoencoder
+      outputs: edge_model_autoencoder
+
+    - inputs:
+        autoencoder: node_model_autoencoder
+        df: node_ord_encoded
+      func: infer_with_autoencoder
+      outputs: node_embedded
+
+    - inputs:
+        autoencoder: edge_model_autoencoder
+        df: edge_ord_encoded
+      func: infer_with_autoencoder
+      outputs: edge_embedded
 
 # Define ConfigLoader object
 

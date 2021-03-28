@@ -14,12 +14,8 @@ class AutoEncoder(nn.Module):
         self.encoder_hidden_layer = nn.Linear(
             in_features=kwargs["input_shape"], out_features=128
         )
-        self.encoder_output_layer = nn.Linear(
-            in_features=128, out_features=128
-        )
-        self.decoder_hidden_layer = nn.Linear(
-            in_features=128, out_features=128
-        )
+        self.encoder_output_layer = nn.Linear(in_features=128, out_features=128)
+        self.decoder_hidden_layer = nn.Linear(in_features=128, out_features=128)
         self.decoder_output_layer = nn.Linear(
             in_features=128, out_features=kwargs["input_shape"]
         )

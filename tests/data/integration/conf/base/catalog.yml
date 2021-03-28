@@ -1,0 +1,22 @@
+node:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: working_dir/raw_input/node/node.csv
+  df_attrs:
+    cat_feats: [cat_1, cat_2]
+    cont_feats: [cont_1]
+
+df_ord_encoded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: working_dir/df_ord_encoded/df_ord_encoded.csv
+
+node_cat_mapping:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: working_dir/category/node_cat_mapping.csv
+
+dataloader_auto:
+  type: eos.warehouse.dataloader_dataset.DataLoaderDataSet
+  filepath: working_dir/dataloader_auto/dataloader_auto.pkl
+
+model_autoencoder:
+  type: eos.warehouse.autoencoder_dataset.AutoEncoderDataSet
+  filepath: working_dir/model_autoencoder/model_autoencoder.pt

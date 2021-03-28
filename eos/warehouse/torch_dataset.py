@@ -5,6 +5,7 @@ Dataset is a PyTorch class that is the valid input for PyTorch's DataLoader
 
 from pathlib import Path, PurePosixPath
 
+import numpy as np
 from numpy import ndarray
 from pandas import DataFrame
 from torch.utils.data import Dataset
@@ -19,5 +20,5 @@ class TorchDataset(Dataset):
         return self.arrays.shape[0]
 
     def __getitem__(self, idx) -> ndarray:
-        X = self.arrays[idx]
+        X = np.array(self.arrays[idx].astype(float))
         return X
