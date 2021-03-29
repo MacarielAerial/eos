@@ -5,23 +5,12 @@ Tests the end-to-end workflow for the package
 import logging
 from typing import Any, Dict
 
-import yaml
-from dgl import from_networkx
-from dgl.heterograph import DGLHeteroGraph
 from kedro.config import ConfigLoader
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
-from networkx import Graph
-from pandas import DataFrame
 from pipelinex import FlexiblePipeline, HatchDict
 
-from eos.factory.concat_feature import FeatureConcatenator
-from eos.refinery.create_graph import GraphCreator
-from eos.refinery.link_node import NodeLinker
 from eos.utils import get_feed_dict
-from eos.warehouse.csv_dataset import CSVDataSetE
-from eos.warehouse.dgl_dataset import DGLDataSet
-from eos.warehouse.networkx_dataset import NetworkXDataSetE
 
 
 def test_e2e() -> None:
@@ -39,12 +28,14 @@ def test_e2e() -> None:
     data_catalog.add_feed_dict(feed_dict=get_feed_dict(params=conf_params))
 
     conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
-    pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("e2e_pipeline")
+    ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
+    nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
 
     runner: SequentialRunner = SequentialRunner()
-    runner.run(pipeline=pipeline, catalog=data_catalog)
+    runner.run(pipeline=ae_pipeline + nx_pipeline, catalog=data_catalog)
 
 
+"""
 def test_e2e_dep() -> None:
     # Test-specific parameter definitions
     path_catalog_yml: str = "tests/data/catalog.yml"
@@ -109,3 +100,4 @@ def test_e2e_dep() -> None:
 
     assert dgl_g_reloaded.ndata
     assert dgl_g_reloaded.edata
+"""

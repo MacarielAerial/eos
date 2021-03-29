@@ -3,10 +3,8 @@ Embeds categorical values of a dataframe
 """
 
 import logging
-from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 
-import numpy as np
 from pandas import DataFrame
 from torch import Tensor, nn, optim
 from torch.utils.data import DataLoader

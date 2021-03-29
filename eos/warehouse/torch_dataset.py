@@ -3,8 +3,6 @@ Includes PyTorch Dataset definition
 Dataset is a PyTorch class that is the valid input for PyTorch's DataLoader
 """
 
-from pathlib import Path, PurePosixPath
-
 import numpy as np
 from numpy import ndarray
 from pandas import DataFrame

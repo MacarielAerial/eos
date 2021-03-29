@@ -2,11 +2,35 @@
 Converts a Pandas DataFrame into a node-only graph
 """
 
+import logging
 from typing import Any, Dict, List, Set
 
 import networkx as nx
 from networkx import Graph
 from pandas import DataFrame
+
+log = logging.getLogger(__name__)
+
+
+def populate_nodes(df: DataFrame) -> Graph:
+    """
+    Initiates a graph with nodes inferred from a dataframe
+    """
+    log.info(f"GraphCreator: Initiatng a graph from a dataframe of shape {df.shape}")
+    G: Graph = Graph()
+
+    log.info(f"GraphCreator: Adding {len(df.index)} nodes to the graph")
+    G.add_nodes_from(df.index.tolist())
+
+    log.info(
+        f"GraphCreator: Populating {G.number_of_nodes()} nodes "
+        f"with {len(df.columns)} attributes each in the graph "
+        f"with {df.shape[0] * df.shape[1]} cells from the dataframe"
+    )
+    mapping_nid_attr: List[Dict[str, float]] = df.to_dict("index")
+    nx.set_node_attributes(G, mapping_nid_attr)
+
+    return G
 
 
 class GraphCreator(object):

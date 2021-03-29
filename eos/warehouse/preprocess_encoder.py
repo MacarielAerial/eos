@@ -4,9 +4,8 @@ as a preprocessing step for AutoEncoder later to embed categorical features
 """
 
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List
 
-import numpy as np
 from numpy import ndarray
 from pandas import DataFrame
 from sklearn.preprocessing import OrdinalEncoder

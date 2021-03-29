@@ -1,14 +1,3 @@
-"""
-Includes PyTorch DataLoader dataset definition
-"""
-
-from pathlib import Path, PurePosixPath
-
-from kedro.io import AbstractDataSet
-from numpy import ndarray
-from pandas import DataFrame
-from torch.utils.data import DataLoader, Dataset
-
 # The file is modified by the author of eos
 
 # Copyright 2021 QuantumBlack Visual Analytics Limited
@@ -57,6 +46,7 @@ from kedro.io.core import (
     get_filepath_str,
     get_protocol_and_path,
 )
+from torch.utils.data import DataLoader
 
 try:
     import joblib

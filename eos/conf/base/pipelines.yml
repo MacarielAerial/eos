@@ -1,6 +1,6 @@
 # Define Pipelne objects
 
-e2e_pipeline:
+autoencoder_pipeline:
   =: pipelinex.FlexiblePipeline
   module: eos.refinery.embed_table
   decorator: pipelinex.log_time
@@ -44,6 +44,15 @@ e2e_pipeline:
         df: edge_ord_encoded
       func: infer_with_autoencoder
       outputs: edge_embedded
+
+networkx_pipeline:
+  =: pipelinex.FlexiblePipeline
+  module: eos.refinery.create_graph
+  decorator: pipelinex.log_time
+  nodes:
+    - inputs: node_embedded
+      func: populate_nodes
+      outputs: node_nx
 
 # Define ConfigLoader object
 

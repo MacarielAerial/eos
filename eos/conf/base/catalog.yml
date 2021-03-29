@@ -20,7 +20,7 @@ node_ord_encoded:
   type: eos.warehouse.csv_dataset.CSVDataSetE 
   filepath: tests/data/e2e/cache/node_ord_encoded.csv
   df_attrs:
-    cat_feats: [team_conference, team_name]
+    cat_feats: [team_conference]
 
 node_cat_mapping:
   type: kedro.extras.datasets.json.JSONDataSet
@@ -30,7 +30,7 @@ edge_ord_encoded:
   type: eos.warehouse.csv_dataset.CSVDataSetE
   filepath: tests/data/e2e/cache/edge_ord_encoded.csv
   df_attrs:
-    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral, team_home, team_away]
+    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral]
     cont_feats: [score_home, score_away]
 
 edge_cat_mapping:
@@ -65,13 +65,13 @@ edge_embedded:
   type: eos.warehouse.csv_dataset.CSVDataSetE
   filepath: tests/data/e2e/cache/edge_embedded.csv
 
-nx_node_dataset:
+node_nx:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
-  filepath: tests/data/e2e/cache/nx_node_nfl.json
+  filepath: tests/data/e2e/cache/node_nx.json
 
-nx_graph_dataset:
+graph_nx:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
-  filepath: tests/data/e2e/cache/nx_graph_nfl.json
+  filepath: tests/data/e2e/cache/graph_nx.json
 
 nx_concat_dataset:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE

@@ -8,6 +8,8 @@ node:
 df_ord_encoded:
   type: eos.warehouse.csv_dataset.CSVDataSetE
   filepath: working_dir/df_ord_encoded/df_ord_encoded.csv
+  df_attrs:
+    cat_feats: [cat_1, cat_2]
 
 node_cat_mapping:
   type: eos.warehouse.csv_dataset.CSVDataSetE
