@@ -54,6 +54,12 @@ networkx_pipeline:
       func: populate_nodes
       outputs: node_nx
 
+    - inputs:
+        G: node_nx
+        df: edge_embedded
+      func: connect_nodes
+      outputs: graph_nx
+
 # Define ConfigLoader object
 
 conf_loader:

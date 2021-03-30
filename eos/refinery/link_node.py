@@ -8,7 +8,50 @@ from typing import Any, Dict, List, Set, Tuple
 import networkx as nx
 import numpy as np
 from networkx import Graph, MultiDiGraph
-from pandas import DataFrame
+from networkx_query import search_nodes
+from pandas import DataFrame, Series
+
+log = logging.getLogger(__name__)
+
+
+def check_metadata(df: DataFrame) -> None:
+    """
+    Checks if necessary metadata exists in input dataframe
+    """
+    metadata_keys: Set[str] = {"edge_src", "edge_dst", "node"}
+    exist_keys: Set[str] = set(df.attrs.keys())
+    if metadata_keys.issubset(exist_keys):
+        raise ValueError(
+            f"Input dataframe missing required metadata keys {metadata_keys.difference(exist_keys)} in pandas.DataFrame.attrs"
+        )
+
+
+def connect_nodes(G: Graph, df: DataFrame) -> Graph:
+    """
+    Populates a graph with edges based on a dataframe
+    """
+    print(
+        f"NodeLinker: Initiating with a graph of {G.number_of_nodes()} nodes",
+        f"and a dataframe of shape {df.shape}",
+    )
+    check_metadata(df=df)
+    edge_src, edge_dst, node = (
+        df.attrs["edge_src"],
+        df.attrs["edge_dst"],
+        df.attrs["node"],
+    )
+    ebunch: List[Tuple[int, int]] = []
+    for i, row in df.iterrows():
+        src_name: str = row[edge_src]
+        dst_name: str = row[edge_dst]
+        src_nid: int = search_nodes(G, {"==": [(node,), src_name]})
+        dst_nid: int = search_nodes(G, {"==": [(node,), dst_name]})
+        series_e_attrs: Series = row.drop(labels=[edge_src, edge_dst])
+        e_attrs: Dict[str, float] = series_e_attrs.to_dict()
+        ebunch.append((src_nid, dst_nid, e_attrs))
+    print(f"NodeLinker: Adding {len(ebunch)} edges to the graph")
+    G.add_edges_from(ebunch)
+    return G
 
 
 class NodeLinker:

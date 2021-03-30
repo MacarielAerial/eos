@@ -575,6 +575,17 @@ pyyaml = ["pyyaml"]
 scipy = ["scipy"]
 
 [[package]]
+name = "networkx-query"
+version = "1.0.1"
+description = "NetworkX Query Tool"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+networkx = ">=2.4,<3.0"
+
+[[package]]
 name = "numpy"
 version = "1.20.1"
 description = "NumPy is the fundamental package for array computing with Python."
@@ -1120,7 +1131,7 @@ pyyaml = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.9"
-content-hash = "1880125ef20f84b9e6f9e8505a5a5ebc0bf38218dbec2e345ca80570cd9f1550"
+content-hash = "8f18aaab5a1d6b0eed4795a13c0f0d4b3162f5e065d625753308d47fcf73a35d"
 
 [metadata.files]
 anyconfig = [
@@ -1419,6 +1430,10 @@ mypy-extensions = [
 networkx = [
     {file = "networkx-2.5-py3-none-any.whl", hash = "sha256:8c5812e9f798d37c50570d15c4a69d5710a18d77bafc903ee9c5fba7454c616c"},
     {file = "networkx-2.5.tar.gz", hash = "sha256:7978955423fbc9639c10498878be59caf99b44dc304c2286162fd24b458c1602"},
+]
+networkx-query = [
+    {file = "networkx_query-1.0.1-py3-none-any.whl", hash = "sha256:ea6b744840e152902db5a5b51c0ee9f6d273959fb2c8c4a338fdee42abd54ffe"},
+    {file = "networkx_query-1.0.1.tar.gz", hash = "sha256:e1d0e2adcae393955e779fea6934d89b157a3abb0a529e8c47d8d9741df34fc4"},
 ]
 numpy = [
     {file = "numpy-1.20.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:ae61f02b84a0211abb56462a3b6cd1e7ec39d466d3160eb4e1da8bf6717cdbeb"},

@@ -4,7 +4,6 @@ node:
   type: eos.warehouse.csv_dataset.CSVDataSetE
   filepath: tests/data/e2e/inputs/nfl_teams.csv
   df_attrs:
-    node_id: team_name
     cat_feats: [team_conference, team_name]
 
 edge:
@@ -64,6 +63,10 @@ node_embedded:
 edge_embedded:
   type: eos.warehouse.csv_dataset.CSVDataSetE
   filepath: tests/data/e2e/cache/edge_embedded.csv
+  df_attrs:
+    edge_src: team_away
+    edge_dst: team_home
+    node: team_name
 
 node_nx:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
