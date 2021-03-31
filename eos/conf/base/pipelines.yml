@@ -52,13 +52,21 @@ networkx_pipeline:
   nodes:
     - inputs: node_embedded
       func: populate_nodes
-      outputs: node_nx
+      outputs: graph_nx_no_edge
 
     - inputs:
-        G: node_nx
+        G: graph_nx_no_edge
         df: edge_embedded
       func: connect_nodes
+      outputs: graph_nx_unconcat
+
+    - inputs: graph_nx_unconcat
+      func: concat_features
       outputs: graph_nx
+
+    - inputs: graph_nx
+      func: convert_nx_to_dgl
+      outputs: graph_dgl
 
 # Define ConfigLoader object
 

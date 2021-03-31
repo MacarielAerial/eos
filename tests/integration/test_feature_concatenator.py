@@ -3,13 +3,16 @@ Tests whether FeatureConcatenator can correctly aggregate
 all assumed-to-be numeric attributes into one attribute
 """
 
+import logging
 import random
 from typing import Any, Dict
 
 import networkx as nx
 from networkx import MultiDiGraph
 
-from eos.factory.concat_feature import FeatureConcatenator
+from eos.warehouse.feature_concatenator import FeatureConcatenator
+
+log = logging.getLogger(__name__)
 
 
 def test_feature_concatenator():
@@ -28,5 +31,6 @@ def test_feature_concatenator():
     fe_obj: FeatureConcatenator = FeatureConcatenator(g_input=g_input)
     fe_obj.concat_n_attrs()
     fe_obj.concat_e_attrs()
+    fe_obj.delete_originals()
 
     assert fe_obj.graph

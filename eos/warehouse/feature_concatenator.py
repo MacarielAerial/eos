@@ -3,6 +3,7 @@ Concatenates all node features (assumed to be numeric at this point)
 into one node attribute that has the type Pytorch Tensor
 """
 
+import logging
 from copy import deepcopy
 from typing import Any, Dict, List, Set, Tuple, Union
 
@@ -11,12 +12,14 @@ import numpy as np
 from networkx import Graph, MultiDiGraph
 from numpy import ndarray
 
+log = logging.getLogger(__name__)
+
 
 class FeatureConcatenator:
     def __init__(self, g_input: Graph) -> None:
-        print(
-            f"FeatureConcatenator: Initiating with a graph of {g_input.number_of_nodes()} nodes",
-            f"and {g_input.number_of_edges()} edges",
+        log.info(
+            f"FeatureConcatenator: Initiating with a graph of {g_input.number_of_nodes()} nodes "
+            f"and {g_input.number_of_edges()} edges"
         )
         self.g_input = g_input
 
@@ -32,9 +35,9 @@ class FeatureConcatenator:
             k_attr for nid, attrs in self.g.nodes.data() for k_attr in attrs.keys()
         }
         self.n_attrs: List[str] = list(n_attrs)
-        print(
-            "FeatureConcatenator: The following set of node attributes",
-            f"is present in the graph:\n{self.n_attrs}",
+        log.info(
+            "FeatureConcatenator: The following set of node attributes "
+            f"is present in the graph:\n{self.n_attrs}"
         )
 
         e_attrs: Set[str] = {
@@ -43,20 +46,20 @@ class FeatureConcatenator:
             for k_attr in attrs.keys()
         }
         self.e_attrs: List[str] = list(e_attrs)
-        print(
-            "FeatureConcatenator: The following set of edge attributes",
-            f"is present in the graph:\n{self.e_attrs}",
+        log.info(
+            "FeatureConcatenator: The following set of edge attributes "
+            f"is present in the graph:\n{self.e_attrs}"
         )
 
     def _init_feat_attrs(self) -> None:
         """
         Creates an empty node attribute "nfeat" and an empty edge attribute "efeat"
         """
-        print("FeatureConcatenator: Initiating target nfeat attribute with nulls")
+        log.info("FeatureConcatenator: Initiating target nfeat attribute with nulls")
         mapping_nfeat: Dict[Union[int, str], None] = {nid: None for nid in self.g.nodes}
         nx.set_node_attributes(self.g, mapping_nfeat, "nfeat")
 
-        print("FeatureConcatenator: Initiating target efeat attribute with nulls")
+        log.info("FeatureConcatenator: Initiating target efeat attribute with nulls")
         mapping_efeat: Dict[Any, Any] = {
             (u, v, k): None for u, v, k in self.g.edges(keys=True)
         }
@@ -66,7 +69,7 @@ class FeatureConcatenator:
         """
         Encodes all node attributes as continous variables into attribute "nfeat"
         """
-        print(
+        log.info(
             f"FeatureConcatenator: Concatenating the following node attributes:\n{self.n_attrs}"
         )
         mapping_attrs: Dict[Union[int, str], ndarray] = {
@@ -79,7 +82,7 @@ class FeatureConcatenator:
         """
         Encodes all edge attributes as continous variables into attribute "efeat"
         """
-        print(
+        log.info(
             f"FeatureConcatenator: Concatenating the following edge attributes:\n{self.e_attrs}"
         )
         mapping_attrs: Dict[Tuple[Any, Any, Any], ndarray] = {
@@ -87,6 +90,21 @@ class FeatureConcatenator:
             for u, v, k, e in self.g.edges.data(keys=True)
         }
         nx.set_edge_attributes(self.g, mapping_attrs, "efeat")
+
+    def delete_originals(self) -> None:
+        """
+        Deletes original node and edge attributes after they have been concatenated
+        """
+        log.info(
+            "FeatureConcatenator: Deleting original node attributes ",
+            f"{self.n_attrs} and edge attributes {self.e_attrs}",
+        )
+        for n_attr in self.n_attrs:
+            for nid in self.g.nodes:
+                del self.g.nodes[nid][n_attr]
+        for e_attr in self.e_attrs:
+            for u, v, k in self.g.edges(keys=True):
+                del self.g.edges[u, v, k][e_attr]
 
     @property
     def graph(self) -> Graph:

@@ -68,18 +68,18 @@ edge_embedded:
     edge_dst: team_home
     node: team_name
 
-node_nx:
+graph_nx_no_edge:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
-  filepath: tests/data/e2e/cache/node_nx.json
+  filepath: tests/data/e2e/cache/graph_nx_no_edge.json
+
+graph_nx_unconcat:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/graph_nx_unconcat.json
 
 graph_nx:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
   filepath: tests/data/e2e/cache/graph_nx.json
 
-nx_concat_dataset:
-  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
-  filepath: tests/data/e2e/cache/nx_concat_nfl.json
-
-dgl_dataset:
+graph_dgl:
   type: eos.warehouse.dgl_dataset.DGLDataSet
-  filepath: tests/data/e2e/cache/dgl_nfl.bin
+  filepath: tests/data/e2e/cache/graph_dgl.bin

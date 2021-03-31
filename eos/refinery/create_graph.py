@@ -6,9 +6,13 @@ import logging
 from typing import Dict, List, Set, Tuple
 
 import networkx as nx
+from dgl import from_networkx
+from dgl.heterograph import DGLHeteroGraph
 from networkx import Graph, MultiDiGraph
 from networkx_query import search_nodes
 from pandas import DataFrame, Series
+
+from eos.warehouse.feature_concatenator import FeatureConcatenator
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +65,7 @@ def connect_nodes(G: Graph, df: DataFrame) -> Graph:
         df.attrs["edge_dst"],
         df.attrs["node"],
     )
+    # G.graph.update({"node": node})
     ebunch: List[Tuple[int, int, Dict[str, float]]] = []
     for i, row in df.iterrows():
         src_name: str = row[edge_src]
@@ -72,4 +77,24 @@ def connect_nodes(G: Graph, df: DataFrame) -> Graph:
         ebunch.append((src_nid, dst_nid, e_attrs))
     log.info(f"NodeLinker: Adding {len(ebunch)} edges to the graph")
     G.add_edges_from(ebunch)
+
     return G
+
+
+def concat_features(G: Graph) -> Graph:
+    """
+    Concatenate all features, assumed to be numeric, into one feature
+    """
+    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input=G)
+    fe_obj.concat_n_attrs()
+    fe_obj.concat_e_attrs()
+    fe_obj.delete_originals()
+
+    return fe_obj.graph
+
+
+def convert_nx_to_dgl(G: Graph) -> DGLHeteroGraph:
+    """
+    Convert NetworkX graph import DGL graph
+    """
+    return from_networkx(nx_graph=G, node_attrs=["nfeat"], edge_attrs=["efeat"])
