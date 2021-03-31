@@ -96,7 +96,7 @@ class FeatureConcatenator:
         Deletes original node and edge attributes after they have been concatenated
         """
         log.info(
-            "FeatureConcatenator: Deleting original node attributes ",
+            "FeatureConcatenator: Deleting original node attributes "
             f"{self.n_attrs} and edge attributes {self.e_attrs}",
         )
         for n_attr in self.n_attrs:
