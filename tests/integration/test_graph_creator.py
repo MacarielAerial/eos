@@ -1,11 +1,10 @@
 import pandas as pd
-from networkx import Graph
 from pandas import DataFrame
 
-from eos.refinery.create_graph import GraphCreator
+from eos.refinery.create_graph import populate_nodes
 
 
-def test_df_to_graph() -> None:
+def test_populate_nodes() -> None:
     df: DataFrame = pd.DataFrame(
         {
             "col_1": ["nid_1", "nid_2", "nid_3"],
@@ -13,9 +12,6 @@ def test_df_to_graph() -> None:
             "col_3": ["attr_1_2_1", "attr_2_2_2", "attr_3_2_3"],
         }
     )
-    df.attrs = {"node_id": "col_1"}
-    gc_obj: GraphCreator = GraphCreator(df_input=df)
-    gc_obj.create_graph()
-    G: Graph = gc_obj.graph
+    G = populate_nodes(df=df)
     assert G.nodes.data()
-    assert G.nodes["nid_1"]["col_2"] == "attr_1_1_1"
+    assert G.nodes[0]["col_2"] == "attr_1_1_1"
