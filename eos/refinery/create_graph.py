@@ -97,4 +97,6 @@ def convert_nx_to_dgl(G: Graph) -> DGLHeteroGraph:
     """
     Convert NetworkX graph import DGL graph
     """
-    return from_networkx(nx_graph=G, node_attrs=["nfeat"], edge_attrs=["efeat"])
+    return from_networkx(
+        nx_graph=G, node_attrs=["nfeat"], edge_attrs=["efeat", "label"]
+    )

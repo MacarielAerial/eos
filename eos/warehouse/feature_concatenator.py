@@ -32,7 +32,10 @@ class FeatureConcatenator:
         Obtains a list-formatted set of node and edge attributes
         """
         n_attrs: Set[str] = {
-            k_attr for nid, attrs in self.g.nodes.data() for k_attr in attrs.keys()
+            k_attr
+            for nid, attrs in self.g.nodes.data()
+            for k_attr in attrs.keys()
+            if k_attr != "label"
         }
         self.n_attrs: List[str] = list(n_attrs)
         log.info(
@@ -44,6 +47,7 @@ class FeatureConcatenator:
             k_attr
             for u, v, k, attrs in self.g.edges.data(keys=True)
             for k_attr in attrs.keys()
+            if k_attr != "label"
         }
         self.e_attrs: List[str] = list(e_attrs)
         log.info(

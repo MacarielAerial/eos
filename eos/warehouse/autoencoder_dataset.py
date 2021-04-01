@@ -24,7 +24,8 @@ class AutoEncoderDataSet(AbstractDataSet):
 
     def _load(self) -> AutoEncoder:
         state_dict = torch.load(str(self._filepath))
-        autoencoder = AutoEncoder(**self._load_args)
+        input_shape = state_dict["encoder_hidden_layer.weight"].shape[1]
+        autoencoder = AutoEncoder(input_shape=input_shape)
         autoencoder.load_state_dict(state_dict)
         return autoencoder
 
