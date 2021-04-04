@@ -25,6 +25,12 @@ pytest = "^6.2.2"
 twine = "^3.3.0"
 wheel = "^0.36.2"
 black = "19.10b0"
+kedro-static-viz = "^0.4.4"
+
+[tool.kedro]
+package_name = "eos"
+project_name = "eos"
+project_version = "0.17.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -88,8 +88,6 @@ def train_gcn(
     model.train()
     for epoch in range(epochs):
         pred = model(G, G.ndata["nfeat"])
-        print(f"Shape of final prediction result for this epoch: {pred.shape}")
-        print(f"Final prediction result: {pred}")
         loss_fn = BCEWithLogitsLoss()
         loss = loss_fn(torch.squeeze(pred[train_mask]), label[train_mask])
         acc = evaluate(model, G, G.ndata["nfeat"], label, val_mask)
