@@ -30,7 +30,7 @@ edge_ord_encoded:
   filepath: tests/data/e2e/cache/edge_ord_encoded.csv
   df_attrs:
     cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral]
-    cont_feats: [score_home, score_away, label]
+    cont_feats: [score_home, score_away, team_home, team_away]
 
 edge_cat_mapping:
   type: kedro.extras.datasets.json.JSONDataSet
@@ -63,6 +63,8 @@ edge_embedded:
     edge_src: team_away
     edge_dst: team_home
     node: team_name
+    n_targets: null
+    e_targets: [score_home, score_away]
 
 graph_nx_no_edge:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
@@ -76,6 +78,14 @@ graph_nx:
   type: eos.warehouse.networkx_dataset.NetworkXDataSetE
   filepath: tests/data/e2e/cache/graph_nx.json
 
+graph_dgl_no_mask:
+  type: eos.warehouse.dgl_dataset.DGLDataSet
+  filepath: tests/data/e2e/cache/graph_dgl_no_mask.bin
+
 graph_dgl:
   type: eos.warehouse.dgl_dataset.DGLDataSet
   filepath: tests/data/e2e/cache/graph_dgl.bin
+
+model_gcn:
+  type: eos.warehouse.gcn_dataset.GCNDataSet
+  filepath: tests/data/e2e/cache/model_gcn.pt

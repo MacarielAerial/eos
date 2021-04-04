@@ -5,7 +5,7 @@ into one node attribute that has the type Pytorch Tensor
 
 import logging
 from copy import deepcopy
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, Set, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -31,25 +31,33 @@ class FeatureConcatenator:
         """
         Obtains a list-formatted set of node and edge attributes
         """
-        n_attrs: Set[str] = {
+        self.n_targets: Set[str] = set(self.g.graph["n_targets"]) if self.g.graph[
+            "n_targets"
+        ] else set()
+        self.n_attrs: Set[str] = {
             k_attr
             for nid, attrs in self.g.nodes.data()
             for k_attr in attrs.keys()
-            if k_attr != "label"
+            if k_attr not in self.n_targets
         }
-        self.n_attrs: List[str] = list(n_attrs)
+        if "label" in self.n_attrs:
+            self.n_attrs.remove("label")
         log.info(
             "FeatureConcatenator: The following set of node attributes "
             f"is present in the graph:\n{self.n_attrs}"
         )
 
-        e_attrs: Set[str] = {
+        self.e_targets: Set[str] = set(self.g.graph["e_targets"]) if self.g.graph[
+            "e_targets"
+        ] else set()
+        self.e_attrs: Set[str] = {
             k_attr
             for u, v, k, attrs in self.g.edges.data(keys=True)
             for k_attr in attrs.keys()
-            if k_attr != "label"
+            if k_attr not in self.e_targets
         }
-        self.e_attrs: List[str] = list(e_attrs)
+        if "label" in self.e_attrs:
+            self.e_attrs.remove("label")
         log.info(
             "FeatureConcatenator: The following set of edge attributes "
             f"is present in the graph:\n{self.e_attrs}"
@@ -101,12 +109,12 @@ class FeatureConcatenator:
         """
         log.info(
             "FeatureConcatenator: Deleting original node attributes "
-            f"{self.n_attrs} and edge attributes {self.e_attrs}",
+            f"{self.n_attrs.union(self.n_targets)} and edge attributes {self.e_attrs.union(self.e_targets)}",
         )
-        for n_attr in self.n_attrs:
+        for n_attr in self.n_attrs.union(self.n_targets):
             for nid in self.g.nodes:
                 del self.g.nodes[nid][n_attr]
-        for e_attr in self.e_attrs:
+        for e_attr in self.e_attrs.union(self.e_targets):
             for u, v, k in self.g.edges(keys=True):
                 del self.g.edges[u, v, k][e_attr]
 

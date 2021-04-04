@@ -6,6 +6,28 @@ from json import JSONEncoder
 from typing import Any, Dict
 
 import numpy as np
+import torch
+
+
+def sample_mask(idx, length):
+    """Create mask."""
+    mask = np.zeros(length)
+    mask[idx] = 1
+    return mask
+
+
+def evaluate(model, graph, features, labels, mask):
+    model.eval()
+    with torch.no_grad():
+        # Use logit to compress values into 0~1 range
+        logits = torch.sigmoid(model(graph, features))
+        logits = logits[mask]
+        # Round for binary assignment and squeeze for shapeshift
+        indices = torch.squeeze(torch.round(logits))
+        labels = labels[mask]
+        correct = torch.sum(indices == labels)
+        # Multiply by 1.0 to convert to float
+        return correct.item() * 1.0 / len(labels)
 
 
 class NumpyEncoder(JSONEncoder):

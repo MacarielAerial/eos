@@ -6,8 +6,7 @@ import logging
 from typing import Dict, List, Set, Tuple
 
 import networkx as nx
-from dgl import from_networkx
-from dgl.heterograph import DGLHeteroGraph
+import numpy as np
 from networkx import Graph, MultiDiGraph
 from networkx_query import search_nodes
 from pandas import DataFrame, Series
@@ -65,6 +64,13 @@ def connect_nodes(G: Graph, df: DataFrame) -> Graph:
         df.attrs["edge_dst"],
         df.attrs["node"],
     )
+    n_targets, e_targets = (df.attrs["n_targets"], df.attrs["e_targets"])
+    log.info(f"NodeLinker: Computing binary labels based on edge targets {e_targets}")
+    df["label"] = df[e_targets].apply(np.argmax, axis=1)
+    log.info(
+        f"NodeLinker: Adding node targets {n_targets} and edge targets {e_targets} as global attributes"
+    )
+    G.graph.update({"n_targets": n_targets, "e_targets": e_targets})
     # G.graph.update({"node": node})
     ebunch: List[Tuple[int, int, Dict[str, float]]] = []
     for i, row in df.iterrows():
@@ -91,12 +97,3 @@ def concat_features(G: Graph) -> Graph:
     fe_obj.delete_originals()
 
     return fe_obj.graph
-
-
-def convert_nx_to_dgl(G: Graph) -> DGLHeteroGraph:
-    """
-    Convert NetworkX graph import DGL graph
-    """
-    return from_networkx(
-        nx_graph=G, node_attrs=["nfeat"], edge_attrs=["efeat", "label"]
-    )
