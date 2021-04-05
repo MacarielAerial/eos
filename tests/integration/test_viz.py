@@ -2,23 +2,24 @@
 Tests custom pipeline visualisation function
 """
 
-import requests
 import logging
-from typing import Dict, Any
-import yaml
+from pathlib import Path
+from typing import Any, Dict
 
+import requests
 from kedro.config import ConfigLoader
 from kedro.io import DataCatalog
 from pipelinex import FlexiblePipeline, HatchDict
-from kedro_static_viz.vendored import format_pipelines_data
 
-from eos.utils import get_feed_dict
 from eos.office.viz import call_viz
+from eos.utils import get_feed_dict
 
 log = logging.getLogger(__name__)
 
 
 def test_viz() -> None:
+    dir_static_site: str = "./public"
+    # Configure pipeline and catalog objects
     conf_loader: ConfigLoader = ConfigLoader(
         conf_paths=["eos/conf/base", "eos/conf/local"]
     )
@@ -37,10 +38,17 @@ def test_viz() -> None:
     nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
     dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
 
-    pipelines: Dict[str, FlexiblePipeline] = {"autoencoder_pipeline": ae_pipeline,
-                                              "networkx_pipeline": nx_pipeline,
-                                              "dgl_pipeline": dgl_pipeline}
-    call_viz(catalog = data_catalog, pipelines = pipelines)
+    pipelines: Dict[str, FlexiblePipeline] = {
+        "autoencoder_pipeline": ae_pipeline,
+        "networkx_pipeline": nx_pipeline,
+        "dgl_pipeline": dgl_pipeline,
+        "master_pipeline": ae_pipeline + nx_pipeline + dgl_pipeline,
+    }
+    # Parse Python object information into JSON form and export to local
+    call_viz(dir_static_site=dir_static_site, catalog=data_catalog, pipelines=pipelines)
+    # Serve the static website from local
+    # run_static_server(directory = dir_static_site, port = 4141)
+    assert Path(dir_static_site).joinpath("pipeline.json")
 
 
 def _check_viz_up(port):

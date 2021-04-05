@@ -24,9 +24,20 @@ def test_df_to_edge() -> None:
     G_input: Graph = MultiDiGraph()
     G_input.add_nodes_from(node_container)
     df: DataFrame = pd.DataFrame(
-        {"col_1": [1, 2, 3], "col_2": [4, 5, 6], "col_3": [7, 8, 9]}
+        {
+            "col_1": [1, 2, 3],
+            "col_2": [4, 5, 6],
+            "col_3": [7, 8, 9],
+            "col_4": [10, 11, 12],
+        }
     )
-    df.attrs = {"edge_src": "col_1", "edge_dst": "col_2", "node": "col_0"}
+    df.attrs = {
+        "edge_src": "col_1",
+        "edge_dst": "col_2",
+        "node": "col_0",
+        "n_targets": None,
+        "e_targets": ["col_4"],
+    }
 
     G: Graph = connect_nodes(G=G_input, df=df)
 

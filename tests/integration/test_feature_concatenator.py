@@ -21,6 +21,8 @@ def test_feature_concatenator():
         {0: {1: {"weight": 0.2}}, 1: {0: {"weight": 0.8}}}
     )
     g_input.add_edge(0, 1, weight=0.3)
+    g_input.graph["n_targets"] = None
+    g_input.graph["e_targets"] = ["weight"]
     node_attrs: Dict[int, Dict[str, Any]] = {
         0: {"feat_1": 10.0, "feat_2": 20, "feat_3": 1, "feat_4": random.uniform(-1, 1)},
         1: {"feat_1": 11.0, "feat_2": 21, "feat_3": 0, "feat_4": random.uniform(-1, 1)},
