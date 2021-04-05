@@ -1,0 +1,13 @@
+# Stores parameters for pipelines
+
+train_autoencoder:
+  epochs: 5
+
+process_dgl:
+  train_ratio: 0.7
+  val_ratio: 0.1
+
+train_gcn:
+  epochs: 25
+  hidden_features: 32
+  out_features: 8

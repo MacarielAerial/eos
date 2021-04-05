@@ -1,0 +1,4 @@
+# Stores parameters for pipelines
+
+train_autoencoder:
+  epochs: 5

@@ -2,15 +2,15 @@
 Tests custom NetworkX data interface class
 """
 
+import networkx as nx
 import yaml
-import tempfile
+from networkx import Graph
+from pipelinex import HatchDict
 
 from eos.warehouse.networkx_dataset import NetworkXDataSetE
-from pipelinex import HatchDict
-from networkx import Graph
-import networkx as nx
 
 G: Graph = nx.complete_graph(10)
+
 
 def test_networkx_dataset_e():
     # Test-specific parameter definitions

@@ -2,53 +2,35 @@
 Tests the end-to-end workflow for the package
 """
 
-import yaml
+import logging
+from typing import Any, Dict
 
-from pipelinex import HatchDict
-from pandas import DataFrame
-from networkx import Graph
+from kedro.config import ConfigLoader
+from kedro.io import DataCatalog
+from kedro.runner import SequentialRunner
+from pipelinex import FlexiblePipeline, HatchDict
 
-from eos.refinery.create_graph import GraphCreator
-from eos.refinery.link_node import NodeLinker
+from eos.utils import get_feed_dict
 
-from eos.warehouse.csv_dataset import CSVDataSetE
-from eos.warehouse.networkx_dataset import NetworkXDataSetE
 
 def test_e2e() -> None:
-    # Test-specific parameter definitions
-    path_catalog_yml: str = "tests/data/catalog.yml"
-    catalog: dict = yaml.safe_load(open(path_catalog_yml, "r"))
-    input_key: str = "test_e2e"
+    conf_loader: ConfigLoader = ConfigLoader(
+        conf_paths=["eos/conf/base", "eos/conf/local"]
+    )
 
-    # CSV Data access operations
-    node_dataset: CSVDataSetE = HatchDict(catalog[input_key]).get("node_dataset")
-    node_data: DataFrame = node_dataset.load()
+    conf_logging: Dict[str, Any] = conf_loader.get("logging*", "logging*/**")
+    logging.config.dictConfig(conf_logging)
 
-    edge_dataset: CSVDataSetE = HatchDict(catalog[input_key]).get("edge_dataset")
-    edge_data: DataFrame = edge_dataset.load()
+    conf_catalog: Dict[str, Any] = conf_loader.get("catalog*", "catalog*/**")
+    data_catalog: DataCatalog = DataCatalog.from_config(conf_catalog)
 
-    # Node population
-    gc_obj: GraphCreator = GraphCreator(df_input = node_data)
-    gc_obj.create_graph()
+    conf_params: Dict[str, Any] = conf_loader.get("parameters*", "parameters*/**")
+    data_catalog.add_feed_dict(feed_dict=get_feed_dict(params=conf_params))
 
-    # Node: NetworkX Data access operations
-    nx_node_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("nx_node_dataset")
-    nx_node_dataset.save(gc_obj.g)
+    conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
+    ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
+    nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
+    dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
 
-    nx_node_g_reloaded: Graph = nx_node_dataset.load()
-
-    # Edge linking
-    nl_obj: NodeLinker = NodeLinker(g_input = nx_node_g_reloaded,
-                                    df_input = edge_data)
-    nl_obj.link_node()
-
-    # Node with edge: NetworkX Data access operations
-    nx_graph_dataset: NetworkXDataSetE = HatchDict(catalog[input_key]).get("nx_graph_dataset")
-    nx_graph_dataset.save(nl_obj.g)
-
-    nx_graph_g_reloaded: Graph = nx_graph_dataset.load()
-
-    # DGL Graph conversion
-
-    assert nx_graph_g_reloaded.nodes.data()
-    assert nx_graph_g_reloaded.edges.data()
+    runner: SequentialRunner = SequentialRunner()
+    runner.run(pipeline=ae_pipeline + nx_pipeline + dgl_pipeline, catalog=data_catalog)

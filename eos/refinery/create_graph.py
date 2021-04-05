@@ -2,97 +2,98 @@
 Converts a Pandas DataFrame into a node-only graph
 """
 
-from typing import Any, Dict, List, Set
+import logging
+from typing import Dict, List, Set, Tuple
 
 import networkx as nx
-from networkx import Graph
-from pandas import DataFrame
+import numpy as np
+from networkx import Graph, MultiDiGraph
+from networkx_query import search_nodes
+from pandas import DataFrame, Series
+
+from eos.warehouse.feature_concatenator import FeatureConcatenator
+
+log = logging.getLogger(__name__)
 
 
-class GraphCreator(object):
+def populate_nodes(df: DataFrame) -> Graph:
     """
-    Create a graph from a pandas DataFrame
+    Initiates a graph with nodes inferred from a dataframe
     """
+    log.info(f"GraphCreator: Initiatng a graph from a dataframe of shape {df.shape}")
+    G: Graph = MultiDiGraph()
 
-    def __init__(self, df_input: DataFrame):
-        self.df_input = df_input
-        print(
-            f"GraphCreator: Initiatng a graph from a dataframe of shape {self.df_input.shape}"
-        )
-        self.g: Graph = Graph()
+    log.info(f"GraphCreator: Adding {len(df.index)} nodes to the graph")
+    G.add_nodes_from(df.index.tolist())
 
-        self._check_metadata()
+    log.info(
+        f"GraphCreator: Populating {G.number_of_nodes()} nodes "
+        f"with {len(df.columns)} attributes each in the graph "
+        f"with {df.shape[0] * df.shape[1]} cells from the dataframe"
+    )
+    mapping_nid_attr: List[Dict[str, float]] = df.to_dict("index")
+    nx.set_node_attributes(G, mapping_nid_attr)
 
-    def _add_nids(self) -> None:
-        """
-        Creates empty nodes
-        """
-        container_nids: List[Any] = list(self.df_input[self.node_id])
-        print(f"GraphCreator: Adding {len(container_nids)} nodes to the graph")
-        self.g.add_nodes_from(container_nids)
+    return G
 
-    def _add_attr_keys(self) -> None:
-        """
-        Creates empty node attribute dictionaries
-        """
-        container_attr_keys: List[str] = list(self.n_attrs)
-        container_attrs_null: Dict[str, None] = dict.fromkeys(container_attr_keys)
-        print(
-            "GraphCreator: Adding the following list of node attributes "
-            f"with null values to the graph:\n{list(container_attrs_null.keys())}"
-        )
-        mapping_nid_attr: Dict[Any, Dict[str, None]] = {
-            nid: container_attrs_null for nid in self.g.nodes
-        }
-        nx.set_node_attributes(self.g, mapping_nid_attr)
 
-    def _add_attr_vals(self) -> None:
-        """
-        Populates node attribue dictionaries with values
-        """
-        print(
-            f"GraphCreator: Populating {self.g.number_of_nodes()} nodes "
-            f"with {len(self.df_input.columns)} attributes each in the graph "
-            f"with {self.df_input.shape[0] * self.df_input.shape[1]} cells from the dataframe"
-        )
-        df_input_attrs: DataFrame = self.df_input.set_index(self.node_id)
-        n_vals_added: int = 0
-        for nid, attrs in self.g.nodes.data():
-            for k_attr in attrs.keys():
-                v_attr: Any = df_input_attrs.loc[nid, k_attr]
-                self.g.nodes[nid][k_attr] = v_attr
-                n_vals_added += 1
-        print(
-            f"GraphCreator: {n_vals_added} node attribute values are appended "
-            "from the dataframe to the graph"
+def check_metadata(df: DataFrame) -> None:
+    """
+    Checks if necessary metadata exists in input dataframe
+    """
+    metadata_keys: Set[str] = {"edge_src", "edge_dst", "node"}
+    exist_keys: Set[str] = set(df.attrs.keys())
+    if not metadata_keys.issubset(exist_keys):
+        raise ValueError(
+            "Input dataframe missing required metadata keys "
+            f"{metadata_keys.difference(exist_keys)} in pandas.DataFrame.attrs"
         )
 
-    def _check_metadata(self) -> None:
-        """
-        Checks if necessary metadata exists in input dataframe
-        """
-        metadata_keys: Set[str] = {"node_id"}
-        if not metadata_keys <= self.df_input.attrs.keys():
-            raise ValueError(
-                f"Input dataframe missing required metadata keys {metadata_keys} in pandas.DataFrame.attrs"
-            )
-        else:
-            self.node_id: str = self.df_input.attrs["node_id"]
-            self.n_attrs: List[str] = [
-                col for col in self.df_input.columns if col != self.node_id
-            ]
-            print(f"GraphCreator: {self.node_id} column is the node id source")
-            print(
-                f"GraphCreator: The following list of columns is the node attribute columns:\n{self.n_attrs}"
-            )
 
-    def create_graph(self) -> None:
-        print("GraphCreator: Creating the graph with the supplied DataFrame")
-        self._add_nids()
-        self._add_attr_keys()
-        self._add_attr_vals()
-        print("GraphCreator: Created the graph accessible by property 'graph'")
+def connect_nodes(G: Graph, df: DataFrame) -> Graph:
+    """
+    Populates a graph with edges based on a dataframe
+    """
+    log.info(
+        f"NodeLinker: Initiating with a graph of {G.number_of_nodes()} nodes "
+        f"and a dataframe of shape {df.shape}",
+    )
+    check_metadata(df=df)
+    edge_src, edge_dst, node = (
+        df.attrs["edge_src"],
+        df.attrs["edge_dst"],
+        df.attrs["node"],
+    )
+    n_targets, e_targets = (df.attrs["n_targets"], df.attrs["e_targets"])
+    log.info(f"NodeLinker: Computing binary labels based on edge targets {e_targets}")
+    df["label"] = df[e_targets].apply(np.argmax, axis=1)
+    log.info(
+        f"NodeLinker: Adding node targets {n_targets} and edge targets {e_targets} as global attributes"
+    )
+    G.graph.update({"n_targets": n_targets, "e_targets": e_targets})
+    # G.graph.update({"node": node})
+    ebunch: List[Tuple[int, int, Dict[str, float]]] = []
+    for i, row in df.iterrows():
+        src_name: str = row[edge_src]
+        dst_name: str = row[edge_dst]
+        src_nid: int = list(search_nodes(G, {"==": [(node,), src_name]}))[0]
+        dst_nid: int = list(search_nodes(G, {"==": [(node,), dst_name]}))[0]
+        series_e_attrs: Series = row.drop(labels=[edge_src, edge_dst])
+        e_attrs: Dict[str, float] = series_e_attrs.to_dict()
+        ebunch.append((src_nid, dst_nid, e_attrs))
+    log.info(f"NodeLinker: Adding {len(ebunch)} edges to the graph")
+    G.add_edges_from(ebunch)
 
-    @property
-    def graph(self) -> Graph:
-        return self.g
+    return G
+
+
+def concat_features(G: Graph) -> Graph:
+    """
+    Concatenate all features, assumed to be numeric, into one feature
+    """
+    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input=G)
+    fe_obj.concat_n_attrs()
+    fe_obj.concat_e_attrs()
+    fe_obj.delete_originals()
+
+    return fe_obj.graph

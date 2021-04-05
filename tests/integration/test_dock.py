@@ -2,12 +2,13 @@
 Tests data access functions in module "dock"
 """
 
-from pipelinex import HatchDict
-from pandas import DataFrame
-from kedro.extras.datasets.pandas import CSVDataSet
 import yaml
+from kedro.extras.datasets.pandas import CSVDataSet
+from pandas import DataFrame
+from pipelinex import HatchDict
 
 path_catalog_yml: str = "tests/data/catalog.yml"
+
 
 def test_dock() -> None:
     input_key: str = "test_dock"

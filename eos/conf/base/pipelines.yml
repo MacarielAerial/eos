@@ -1,0 +1,92 @@
+# Define Pipelne objects
+
+autoencoder_pipeline:
+  =: pipelinex.FlexiblePipeline
+  module: eos.refinery.embed_table
+  decorator: pipelinex.log_time
+  nodes:
+    - inputs: node
+      func: ordinally_encode_table
+      outputs: [node_ord_encoded, node_cat_mapping]
+
+    - inputs: edge
+      func: ordinally_encode_table
+      outputs: [edge_ord_encoded, edge_cat_mapping]
+
+    - inputs: node_ord_encoded
+      func: df_to_dataloader
+      outputs: node_dataloader_auto
+
+    - inputs: edge_ord_encoded
+      func: df_to_dataloader
+      outputs: edge_dataloader_auto
+
+    - inputs:
+        dataloader: node_dataloader_auto
+        params: params:train_autoencoder
+      func: train_autoencoder
+      outputs: node_model_autoencoder
+
+    - inputs:
+        dataloader: edge_dataloader_auto
+        params: params:train_autoencoder
+      func: train_autoencoder
+      outputs: edge_model_autoencoder
+
+    - inputs:
+        autoencoder: node_model_autoencoder
+        df: node_ord_encoded
+      func: infer_with_autoencoder
+      outputs: node_embedded
+
+    - inputs:
+        autoencoder: edge_model_autoencoder
+        df: edge_ord_encoded
+      func: infer_with_autoencoder
+      outputs: edge_embedded
+
+networkx_pipeline:
+  =: pipelinex.FlexiblePipeline
+  module: eos.refinery.create_graph
+  decorator: pipelinex.log_time
+  nodes:
+    - inputs: node_embedded
+      func: populate_nodes
+      outputs: graph_nx_no_edge
+
+    - inputs:
+        G: graph_nx_no_edge
+        df: edge_embedded
+      func: connect_nodes
+      outputs: graph_nx_unconcat
+
+    - inputs: graph_nx_unconcat
+      func: concat_features
+      outputs: graph_nx
+
+dgl_pipeline:
+  =: pipelinex.FlexiblePipeline
+  module: eos.factory.apply_gcn
+  decorator: pipelinex.log_time
+  nodes:
+    - inputs: graph_nx
+      func: convert_nx_to_dgl
+      outputs: graph_dgl_no_mask
+
+    - inputs:
+        dgl_tuple: graph_dgl_no_mask
+        params: params:process_dgl
+      func: process_dgl
+      outputs: graph_dgl
+
+    - inputs:
+        dgl_tuple: graph_dgl
+        params: params:train_gcn
+      func: train_gcn
+      outputs: model_gcn
+
+# Define ConfigLoader object
+
+conf_loader:
+  =: kedro.config.ConfigLoader
+  conf_paths: (["eos/conf/base", "eos/conf/local"])

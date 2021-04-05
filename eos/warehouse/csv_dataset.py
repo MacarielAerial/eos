@@ -53,7 +53,7 @@ class CSVDataSetE(AbstractVersionedDataSet):
     Example:
     ::
 
-        >>> from eos.warehouse.csv_dataset_e import CSVDataSetE
+        >>> from eos.warehouse.csv_dataset import CSVDataSetE
         >>> import pandas as pd
         >>>
         >>> data = pd.DataFrame({'col1': [1, 2], 'col2': [4, 5],
@@ -169,7 +169,7 @@ class CSVDataSetE(AbstractVersionedDataSet):
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
 
         with self._fs.open(save_path, **self._fs_open_args_save) as fs_file:
-            data.attrs = self.df_attrs
+            data.attrs = self.df_attrs if self.df_attrs else {}
             data.to_csv(path_or_buf=fs_file, **self._save_args)
 
         self._invalidate_cache()

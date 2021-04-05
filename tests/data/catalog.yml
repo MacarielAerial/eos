@@ -28,6 +28,10 @@ test_e2e:
     =: eos.warehouse.networkx_dataset.NetworkXDataSetE
     filepath: tests/data/e2e/cache/nx_graph_nfl.json
 
+  nx_concat_dataset:
+    =: eos.warehouse.networkx_dataset.NetworkXDataSetE
+    filepath: tests/data/e2e/cache/nx_concat_nfl.json
+
   dgl_dataset:
     =: eos.warehouse.dgl_dataset.DGLDataSet
     filepath: tests/data/e2e/cache/dgl_nfl.bin

@@ -1,0 +1,109 @@
+# Includes dataset configuration for DataCatalog
+
+node:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/inputs/nfl_teams.csv
+  layer: raw
+  df_attrs:
+    cat_feats: [team_conference, team_name]
+
+edge:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/inputs/spreadspoke_scores.csv
+  layer: raw
+  df_attrs:
+    edge_src: team_away
+    edge_dst: team_home
+    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral, team_home, team_away]
+    cont_feats: [score_home, score_away]
+
+node_ord_encoded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE 
+  filepath: tests/data/e2e/cache/node_ord_encoded.csv
+  layer: intermediary
+  df_attrs:
+    cat_feats: [team_conference]
+
+node_cat_mapping:
+  type: kedro.extras.datasets.json.JSONDataSet
+  filepath: tests/data/e2e/cache/node_cat_mapping.json
+  layer: intermediary
+
+edge_ord_encoded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/cache/edge_ord_encoded.csv
+  layer: intermediary
+  df_attrs:
+    cat_feats: [schedule_season, schedule_week, schedule_playoff, stadium, stadium_neutral]
+    cont_feats: [score_home, score_away, team_home, team_away]
+
+edge_cat_mapping:
+  type: kedro.extras.datasets.json.JSONDataSet
+  filepath: tests/data/e2e/cache/edge_cat_mapping.json
+  layer: intermediary
+
+node_dataloader_auto:
+  type: eos.warehouse.dataloader_dataset.DataLoaderDataSet
+  filepath: tests/data/e2e/cache/node_dataloader_auto.pkl
+  layer: intermediary
+
+edge_dataloader_auto:
+  type: eos.warehouse.dataloader_dataset.DataLoaderDataSet
+  filepath: tests/data/e2e/cache/edge_dataloader_auto.pkl
+  layer: intermediary
+
+node_model_autoencoder:
+  type: eos.warehouse.autoencoder_dataset.AutoEncoderDataSet
+  filepath: tests/data/e2e/cache/node_model_autoencoder.pt
+  layer: intermediary
+
+edge_model_autoencoder:
+  type: eos.warehouse.autoencoder_dataset.AutoEncoderDataSet
+  filepath: tests/data/e2e/cache/edge_model_autoencoder.pt
+  layer: intermediary
+
+node_embedded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/cache/node_embedded.csv
+  layer: intermediary
+
+edge_embedded:
+  type: eos.warehouse.csv_dataset.CSVDataSetE
+  filepath: tests/data/e2e/cache/edge_embedded.csv
+  layer: intermediary
+  df_attrs:
+    edge_src: team_away
+    edge_dst: team_home
+    node: team_name
+    n_targets: null
+    e_targets: [score_home, score_away]
+
+graph_nx_no_edge:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/graph_nx_no_edge.json
+  layer: intermediary
+
+graph_nx_unconcat:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/graph_nx_unconcat.json
+  layer: intermediary
+
+graph_nx:
+  type: eos.warehouse.networkx_dataset.NetworkXDataSetE
+  filepath: tests/data/e2e/cache/graph_nx.json
+  layer: intermediary
+
+graph_dgl_no_mask:
+  type: eos.warehouse.dgl_dataset.DGLDataSet
+  filepath: tests/data/e2e/cache/graph_dgl_no_mask.bin
+  layer: primary
+
+graph_dgl:
+  type: eos.warehouse.dgl_dataset.DGLDataSet
+  filepath: tests/data/e2e/cache/graph_dgl.bin
+  layer: model input
+
+model_gcn:
+  type: eos.warehouse.gcn_dataset.GCNDataSet
+  filepath: tests/data/e2e/cache/model_gcn.pt
+  layer: models
