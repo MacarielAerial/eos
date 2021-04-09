@@ -12,6 +12,8 @@ from pipelinex import FlexiblePipeline, HatchDict
 
 from eos.utils import get_feed_dict
 
+log = logging.getLogger(__name__)
+
 
 def test_e2e() -> None:
     conf_loader: ConfigLoader = ConfigLoader(

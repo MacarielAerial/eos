@@ -16,11 +16,11 @@ def sample_mask(idx, length):
     return mask
 
 
-def evaluate(model, graph, features, labels, mask):
+def evaluate(model, graph, n_feats, e_feats, labels, mask):
     model.eval()
     with torch.no_grad():
         # Use logit to compress values into 0~1 range
-        logits = torch.sigmoid(model(graph, features))
+        logits = torch.sigmoid(model(graph, n_feats, e_feats))
         logits = logits[mask]
         # Round for binary assignment and squeeze for shapeshift
         indices = torch.squeeze(torch.round(logits))

@@ -24,12 +24,13 @@ class GCNDataSet(AbstractDataSet):
 
     def _load(self) -> Model:
         state_dict = torch.load(str(self._filepath))
-        in_features, hidden_features, out_features = (
-            state_dict["in_features.weight"].shape[1],
+        n_in_features, e_in_features, hidden_features, out_features = (
+            state_dict["n_in_features.weight"].shape[1],
+            state_dict["e_in_features.weight"].shape[1],
             state_dict["hidden_features.weight"].shape[1],
             state_dict["out_features.weight"].shape[1],
         )
-        model = Model(in_features, hidden_features, out_features)
+        model = Model(n_in_features, e_in_features, hidden_features, out_features)
         model.load_state_dict(state_dict)
         return model
 

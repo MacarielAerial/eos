@@ -73,24 +73,33 @@ def train_gcn(
     """
     Trains a GCN model
     """
-    epochs: int = params["epochs"]
-    hidden_features: int = params["hidden_features"]
-    out_features: int = params["out_features"]
     G = dgl_tuple[0][0]
-    input_shape: int = G.ndata["nfeat"].shape[2]
-    model = Model(input_shape, hidden_features, out_features)
+    n_in_features: int = G.ndata["nfeat"].shape[2]
+    e_in_features: int = G.edata["efeat"].shape[2]
     label: Tensor = G.edata["label"]
     train_mask: Tensor = G.edata["train_mask"]
     val_mask: Tensor = G.edata["val_mask"]
+
+    epochs: int = params["epochs"]
+    hidden_features: int = params["hidden_features"]
+    out_features: int = params["out_features"]
+
+    model = Model(
+        n_in_features,
+        e_in_features,
+        hidden_features,
+        out_features,
+        **params["model_params"],
+    )
 
     opt = torch.optim.Adam(model.parameters())
     log.info("Training GCN model")
     model.train()
     for epoch in range(epochs):
-        pred = model(G, G.ndata["nfeat"])
+        pred = model(G, G.ndata["nfeat"], G.edata["efeat"])
         loss_fn = BCEWithLogitsLoss()
         loss = loss_fn(torch.squeeze(pred[train_mask]), label[train_mask])
-        acc = evaluate(model, G, G.ndata["nfeat"], label, val_mask)
+        acc = evaluate(model, G, G.ndata["nfeat"], G.edata["efeat"], label, val_mask)
         opt.zero_grad()
         loss.backward()
         opt.step()
