@@ -30,9 +30,11 @@ def test_e2e() -> None:
     data_catalog.add_feed_dict(feed_dict=get_feed_dict(params=conf_params))
 
     conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
-    ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
-    nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
+    # ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
+    # nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
     dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
 
     runner: SequentialRunner = SequentialRunner()
-    runner.run(pipeline=ae_pipeline + nx_pipeline + dgl_pipeline, catalog=data_catalog)
+    runner.run(pipeline=dgl_pipeline, catalog=data_catalog)
+
+    assert False

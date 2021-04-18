@@ -74,38 +74,47 @@ def train_gcn(
     Trains a GCN model
     """
     G = dgl_tuple[0][0]
-    n_in_features: int = G.ndata["nfeat"].shape[2]
-    e_in_features: int = G.edata["efeat"].shape[2]
+    # Squeeze unnecessary dimensions
+    G.edata["efeat"] = G.edata["efeat"].squeeze(1)
+    G.ndata["nfeat"] = G.ndata["nfeat"].squeeze(1)
+    node_in_feats: int = G.ndata["nfeat"].shape[1]
+    edge_in_feats: int = G.edata["efeat"].shape[1]
     label: Tensor = G.edata["label"]
     train_mask: Tensor = G.edata["train_mask"]
     val_mask: Tensor = G.edata["val_mask"]
+    test_mask: Tensor = G.edata["test_mask"]
 
     epochs: int = params["epochs"]
-    hidden_features: int = params["hidden_features"]
-    out_features: int = params["out_features"]
+    edge_hidden_feats: int = params["edge_hidden_feats"]
+    node_out_feats: int = params["node_out_feats"]
 
-    model = Model(
-        n_in_features,
-        e_in_features,
-        hidden_features,
-        out_features,
-        **params["model_params"],
-    )
+    model = Model(node_in_feats, edge_in_feats, node_out_feats, edge_hidden_feats)
 
     opt = torch.optim.Adam(model.parameters())
+    loss_fn = BCEWithLogitsLoss()
     log.info("Training GCN model")
     model.train()
     for epoch in range(epochs):
-        pred = model(G, G.ndata["nfeat"], G.edata["efeat"])
-        loss_fn = BCEWithLogitsLoss()
-        loss = loss_fn(torch.squeeze(pred[train_mask]), label[train_mask])
-        acc = evaluate(model, G, G.ndata["nfeat"], G.edata["efeat"], label, val_mask)
+        logits = model(G, G.ndata["nfeat"], G.edata["efeat"])
+        loss = loss_fn(logits[train_mask].reshape(-1,), label[train_mask])
+
+        train_acc = evaluate(
+            model, G, G.ndata["nfeat"], G.edata["efeat"], label, train_mask
+        )
+        val_acc = evaluate(
+            model, G, G.ndata["nfeat"], G.edata["efeat"], label, val_mask
+        )
+        test_acc = evaluate(
+            model, G, G.ndata["nfeat"], G.edata["efeat"], label, test_mask
+        )
+
         opt.zero_grad()
         loss.backward()
         opt.step()
+
         log.info(
-            "epoch : {}/{}, loss = {:.6f}, acc = {:.6f}".format(
-                epoch + 1, epochs, loss, acc
+            "epoch : {}/{}, loss = {:.6f}, train_acc = {:.6f}, val_acc = {:.6f}, test_acc = {:.6f}".format(
+                epoch + 1, epochs, loss, train_acc, val_acc, test_acc
             )
         )
     log.info("GCN model training complete")

@@ -1,61 +1,117 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# MPNN
+# pylint: disable= no-member, arguments-differ, invalid-name
+
 """
 Includes the defnition of a Graphical Neural Network (GNN)
 """
 
-import dgl.function as fn
+import logging
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from dgl.nn import EdgeConv, GATConv, GraphConv
-from torch.nn import Dropout
+from dgl.nn.pytorch import Set2Set
+
+from eos.warehouse.gcn_custom.mpnn import MPNNGNN
+
+log = logging.getLogger(__name__)
 
 
+# pylint: disable=W0221
 class Model(nn.Module):
+    """MPNN for regression and classification on graphs.
+    MPNN is introduced in `Neural Message Passing for Quantum Chemistry
+    <https://arxiv.org/abs/1704.01212>`__.
+    Parameters
+    ----------
+    node_in_feats : int
+        Size for the input node features.
+    edge_in_feats : int
+        Size for the input edge features.
+    node_out_feats : int
+        Size for the output node representations. Default to 64.
+    edge_hidden_feats : int
+        Size for the hidden edge representations. Default to 128.
+    n_tasks : int
+        Number of tasks, which is also the output size. Default to 1.
+    num_step_message_passing : int
+        Number of message passing steps. Default to 6.
+    num_step_set2set : int
+        Number of set2set steps. Default to 6.
+    num_layer_set2set : int
+        Number of set2set layers. Default to 3.
+    """
+
     def __init__(
-        self, n_in_features, e_in_features, hidden_features, out_features, **kwargs
+        self,
+        node_in_feats,
+        edge_in_feats,
+        node_out_feats=64,
+        edge_hidden_feats=128,
+        n_tasks=1,
+        num_step_message_passing=6,
+        num_step_set2set=6,
+        num_layer_set2set=3,
     ):
-        super().__init__()
-        self.gcn = GCN(
-            n_in_features, e_in_features, hidden_features, out_features, **kwargs
+        super(Model, self).__init__()
+
+        self.gnn = MPNNGNN(
+            node_in_feats=node_in_feats,
+            node_out_feats=node_out_feats,
+            edge_in_feats=edge_in_feats,
+            edge_hidden_feats=edge_hidden_feats,
+            num_step_message_passing=num_step_message_passing,
         )
-        self.pred = DotProductPredictor()
+        self.readout = Set2Set(
+            input_dim=node_out_feats,
+            n_iters=num_step_set2set,
+            n_layers=num_layer_set2set,
+        )
+        self.predict = nn.Sequential(
+            nn.Linear(2 * node_out_feats, node_out_feats),
+            nn.ReLU(),
+            nn.Linear(node_out_feats, n_tasks),
+        )
+        self.pred = MLPPredictor(node_out_feats, 1)
 
-    def forward(self, g, x_n, x_e):
-        h = self.gcn(g, x_n, x_e)
-        return self.pred(g, h)
+    def forward(self, g, node_feats, edge_feats):
+        """Graph-level regression/soft classification.
+        Parameters
+        ----------
+        g : DGLGraph
+            DGLGraph for a batch of graphs.
+        node_feats : float32 tensor of shape (V, node_in_feats)
+            Input node features.
+        edge_feats : float32 tensor of shape (E, edge_in_feats)
+            Input edge features.
+        Returns
+        -------
+        float32 tensor of shape (G, n_tasks)
+            Prediction for the graphs in the batch. G for the number of graphs.
+        """
+        node_feats = self.gnn(g, node_feats, edge_feats)
+        return self.pred(g, node_feats)
 
 
-class GCN(nn.Module):
-    def __init__(self, n_in_feats, e_in_feats, hid_feats, out_feats, **kwargs):
+class MLPPredictor(nn.Module):
+    def __init__(self, in_features, out_classes):
         super().__init__()
-        self.n_conv1 = GraphConv(in_feats=n_in_feats, out_feats=int(hid_feats/2))
-        self.n_conv2 = GraphConv(in_feats=int(hid_feats/2), out_feats=int(out_feats/2))
-        self.e_conv1 = EdgeConv(in_feat=e_in_feats, out_feat=int(hid_feats/2))
-        self.e_conv2 = EdgeConv(in_feat=int(hid_feats/2), out_feat=int(out_feats/2))
+        self.W = nn.Linear(in_features * 2, out_classes)
 
-        self.dropout = Dropout(p=kwargs["dropout"])
+    def apply_edges(self, edges):
+        h_u = edges.src["h"]
+        h_v = edges.dst["h"]
+        score = self.W(torch.cat([h_u, h_v], 1))
+        return {"score": score}
 
-    def forward(self, graph, n_inputs, e_inputs):
-        # inputs are features of nodes and edges
-        h_n = self.n_conv1(graph, n_inputs)
-        h_n = self.dropout(h_n)
-        h_n = F.relu(h_n)
-        h_n = self.n_conv2(graph, h_n)
-
-        h_e = self.e_conv1(graph, e_inputs)
-        h_e = self.dropout(h_e)
-        h_e = F.relu(h_e)
-        h_e = self.e_conv2(graph, h_e)
-
-        h = torch.cat((h_n, h_e), 1)
-        return h
-
-
-class DotProductPredictor(nn.Module):
     def forward(self, graph, h):
         # h contains the node representations computed from the GNN defined
         # in the node classification section (Section 5.1).
         with graph.local_scope():
             graph.ndata["h"] = h
-            graph.apply_edges(fn.u_dot_v("h", "h", "score"))
+            graph.apply_edges(self.apply_edges)
             return graph.edata["score"]

@@ -9,7 +9,5 @@ process_dgl:
 
 train_gcn:
   epochs: 25
-  hidden_features: 64
-  out_features: 16
-  model_params:
-    dropout: 0.25
+  node_out_feats: 16
+  edge_hidden_feats: 64
