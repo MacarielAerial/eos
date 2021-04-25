@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "eos"
+version = "0.0.1"
+description = "A general purpose tool for running geometric deep learning models from 2D data"
+authors = ["MacarielAerial <yyu.mam2020@london.edu>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+yamllint = "^1.26.1"
+isort = "^5.8.0"
+black = "^20.8b1"
+mypy = "^0.812"
+flake8 = "^3.9.1"
+pytest = "^6.2.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
