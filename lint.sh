@@ -30,4 +30,3 @@ flake8 .
 
 echo -e "${li:?}Checking Python types..."
 mypy src/eos
-mypy src/tests
