@@ -26,7 +26,7 @@ else
 fi
 
 echo -e "${li:?}Checking PEP8 compliance..."
-flake8 .
+pflake8 .
 
 echo -e "${li:?}Checking Python types..."
-mypy src/eos
+mypy eos

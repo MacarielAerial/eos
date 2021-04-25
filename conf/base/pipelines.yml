@@ -1,0 +1,14 @@
+autoencoder_pipeline:
+  =: pipelinex.FlexiblePipeline
+  nodes:
+    - inputs: [edge_dataframe, params:edge_dataframe]
+      func: eos.nodes.ordinal_encoder.fit_ordinal_encoder
+      outputs: e_ord_encoder
+
+    - inputs: [edge_dataframe, e_ord_encoder, params:edge_dataframe]
+      func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
+      outputs: edge_ord_encoded
+
+    - inputs: [edge_ord_encoded, params:graph_nx]
+      func: eos.nodes.graph_creator.link_nodes_with_no_graph
+      outputs: graph_nx

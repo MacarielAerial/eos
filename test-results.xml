@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="2.001" timestamp="2021-04-25T23:21:43.059265" hostname="Encycloalactica"><testcase classname="tests.e2e.test_e2e" name="test_e2e" time="0.427"><failure message="assert False">def test_e2e() -&gt; None:
+        conf_loader: ConfigLoader = ConfigLoader(conf_paths=["conf/base", "conf/local"])
+    
+        conf_logging: Dict[str, Any] = conf_loader.get("logging*", "logging*/**")
+        logging.config.dictConfig(conf_logging)
+    
+        conf_catalog: Dict[str, Any] = conf_loader.get("catalog*", "catalog*/**")
+        data_catalog: DataCatalog = DataCatalog.from_config(conf_catalog)
+    
+        conf_params: Dict[str, Any] = conf_loader.get("parameters*", "parameters*/**")
+        data_catalog.add_feed_dict(feed_dict=get_feed_dict(params=conf_params))
+    
+        conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
+        ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
+        # nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
+        # dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
+    
+        runner: SequentialRunner = SequentialRunner()
+        runner.run(pipeline=ae_pipeline, catalog=data_catalog)
+&gt;       assert False
+E       assert False
+
+tests/e2e/test_e2e.py:33: AssertionError</failure></testcase><testcase classname="tests.unit.test_ordinal_encoder" name="test_fit_ordinal_encoder" time="0.003" /></testsuite></testsuites>

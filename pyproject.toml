@@ -21,6 +21,16 @@ black = "^20.8b1"
 mypy = "^0.812"
 flake8 = "^3.9.1"
 pytest = "^6.2.3"
+pyproject-flake8 = "^0.0.1-alpha.2"
+
+[tool.flake8]
+max-line-length = 100
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,0 +1,9 @@
+edge_dataframe:
+  cols_to_encode:
+    - Date
+    - Hom
+    - Opp
+
+graph_nx:
+  edge_tuple_src: Opp
+  edge_tuple_dst: Hom
