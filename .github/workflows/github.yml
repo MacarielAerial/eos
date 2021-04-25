@@ -1,7 +1,6 @@
----
 name: Eos CI
 
-on: [push, pull_request]
+on: [push, pull_request]  # yamllint disable-line rule:truthy
 
 jobs:
   build:
