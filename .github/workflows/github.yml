@@ -22,10 +22,10 @@ jobs:
           poetry install
       - name: Lint code
         run: |
-          poetry run sh ./lint.sh
+          poetry run bash ./lint.sh
       - name: Test code
         run: |
-          poetry run sh ./test.sh
+          poetry run bash ./test.sh
       - name: Upload pytest results
         uses: actions/upload-artifact@v2
         with:
