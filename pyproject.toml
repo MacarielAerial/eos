@@ -6,7 +6,12 @@ authors = ["MacarielAerial <yyu.mam2020@london.edu>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.9"
+networkx = "^2.5.1"
+dgl = "^0.6.1"
+pandas = "^1.2.4"
+kedro = "^0.17.3"
+pipelinex = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 yamllint = "^1.26.1"
