@@ -10,6 +10,22 @@ edge_ord_encoded:
   type: kedro.extras.datasets.pandas.CSVDataSet
   filepath: data/02_intermediate/edge_ord_encoded.csv
 
+edge_dataloader:
+  type: eos.datasets.dataloader_dataset.DataLoaderDataSet
+  filepath: data/02_intermediate/edge_dataloader.pkl
+
+edge_autoencoder:
+  type: eos.datasets.autoencoder_dataset.AutoEncoderDataSet
+  filepath: data/02_intermediate/edge_autoencoder.pt
+
+edge_auto_encoded:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/02_intermediate/edge_auto_encoded.csv
+
+graph_nx_unconcat:
+  type: kedro.extras.datasets.networkx.NetworkXDataSet
+  filepath: data/02_intermediate/graph_nx_unconcat.json
+
 graph_nx:
   type: kedro.extras.datasets.networkx.NetworkXDataSet
-  filepath: data/03_primary/graph_nx.json
+  filepath: data/02_intermediate/graph_nx.json

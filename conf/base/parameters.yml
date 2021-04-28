@@ -4,6 +4,15 @@ edge_dataframe:
     - Hom
     - Opp
 
+train_autoencoder:
+  epochs: 5
+
+infer_with_autoencoder:
+  cols_to_encode:
+    - Date
+
 graph_nx:
   edge_tuple_src: Opp
   edge_tuple_dst: Hom
+  n_targets: []
+  e_targets: [Opp.1, Tm]

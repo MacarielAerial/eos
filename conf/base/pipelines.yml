@@ -9,6 +9,26 @@ autoencoder_pipeline:
       func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
       outputs: edge_ord_encoded
 
-    - inputs: [edge_ord_encoded, params:graph_nx]
+    - inputs: edge_ord_encoded
+      func: eos.nodes.autoencoder.df_to_dataloader
+      outputs: edge_dataloader
+
+    - inputs: [edge_dataloader, params:train_autoencoder]
+      func: eos.nodes.autoencoder.train_autoencoder
+      outputs: edge_autoencoder
+
+    - inputs: [edge_ord_encoded, edge_autoencoder, params:infer_with_autoencoder]
+      func: eos.nodes.autoencoder.infer_with_autoencoder
+      outputs: edge_auto_encoded
+
+
+networkx_pipeline:
+  =: pipelinex.FlexiblePipeline
+  nodes:
+    - inputs: [edge_auto_encoded, params:graph_nx]
       func: eos.nodes.graph_creator.link_nodes_with_no_graph
+      outputs: graph_nx_unconcat
+
+    - inputs: graph_nx_unconcat
+      func: eos.nodes.graph_creator.concat_features
       outputs: graph_nx

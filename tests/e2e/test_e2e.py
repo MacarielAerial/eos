@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Any, Dict
 
 from kedro.config import ConfigLoader
@@ -25,9 +26,10 @@ def test_e2e() -> None:
 
     conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
     ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
-    # nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
+    nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
     # dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
 
     runner: SequentialRunner = SequentialRunner()
-    runner.run(pipeline=ae_pipeline, catalog=data_catalog)
-    assert False
+    runner.run(pipeline=ae_pipeline + nx_pipeline, catalog=data_catalog)
+
+    assert Path("./data/02_intermediate/graph_nx.json").is_file()

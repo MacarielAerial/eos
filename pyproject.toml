@@ -13,6 +13,7 @@ pandas = "^1.2.4"
 kedro = "^0.17.3"
 pipelinex = "^0.6.0"
 sklearn = "^0.0"
+torch = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 yamllint = "^1.26.1"
@@ -25,6 +26,7 @@ pyproject-flake8 = "^0.0.1-alpha.2"
 
 [tool.flake8]
 max-line-length = 100
+extend-ignore = "E203,"
 
 [tool.pytest.ini_options]
 log_cli = true

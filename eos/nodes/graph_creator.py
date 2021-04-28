@@ -2,8 +2,11 @@ import logging
 from typing import Any, Dict, List, Tuple
 
 import networkx as nx
+import numpy as np
 from networkx import Graph
 from pandas import DataFrame
+
+from eos.classes.feature_concatenator import FeatureConcatenator
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +23,17 @@ def link_nodes_with_no_graph(df: DataFrame, params: Dict[str, Any]) -> Graph:
     log.info(
         f"({edge_tuple_src}, {edge_tuple_dst}) is edge tuple and "
         f"{edge_attrs} are edge attributes"
+    )
+    n_targets = params["n_targets"]
+    e_targets = params["e_targets"]
+    df["label"] = df[e_targets].apply(np.argmax, axis=1)
+    log.info(
+        f"Edge attribute 'label' has been created with {np.sum(df['label'])} positives"
+    )
+    g.graph.update({"n_targets": n_targets, "e_targets": e_targets})
+    log.info(
+        f"Added edge targets {e_targets} as global graph attributes and"
+        f"added node targets {n_targets} as global graph attrbutes"
     )
 
     df_as_dict: Dict[str, Dict[str, float]] = df.to_dict(orient="index")
@@ -42,3 +56,15 @@ def link_nodes_with_no_graph(df: DataFrame, params: Dict[str, Any]) -> Graph:
     )
 
     return g
+
+
+def concat_features(g: Graph) -> Graph:
+    """
+    Concatenate all features, assumed to be numeric, into one feature
+    """
+    fe_obj: FeatureConcatenator = FeatureConcatenator(g_input=g)
+    fe_obj.concat_n_attrs()
+    fe_obj.concat_e_attrs()
+    fe_obj.delete_originals()
+
+    return fe_obj.graph
