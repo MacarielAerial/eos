@@ -27,9 +27,10 @@ def test_e2e() -> None:
     conf_pipeline: Dict[str, Any] = conf_loader.get("pipelines*", "pipelines*/**")
     ae_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("autoencoder_pipeline")
     nx_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("networkx_pipeline")
-    # dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
+    dgl_pipeline: FlexiblePipeline = HatchDict(conf_pipeline).get("dgl_pipeline")
 
     runner: SequentialRunner = SequentialRunner()
-    runner.run(pipeline=ae_pipeline + nx_pipeline, catalog=data_catalog)
+    runner.run(pipeline=ae_pipeline + nx_pipeline + dgl_pipeline, catalog=data_catalog)
 
-    assert Path("./data/02_intermediate/graph_nx.json").is_file()
+    assert False
+    assert Path("./data/06_models/model_gcn.json").is_file()

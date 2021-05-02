@@ -1,8 +1,34 @@
-edge_dataframe:
+n_ord_encoder_nid:
+  cols_to_encode:
+    - Nam
+
+n_ord_encoder_attr:
+  cols_to_encode:
+    - Location
+
+e_ord_encoder_attr:
   cols_to_encode:
     - Date
-    - Hom
+
+node_ord_encoded_nids_only:
+  cols_to_transform:
+    - Nam
+
+node_ord_encoded:
+  cols_to_transform:
+    - Location
+
+edge_ord_encoded_src_only:
+  cols_to_transform:
     - Opp
+
+edge_ord_encoded_nids_only:
+  cols_to_transform:
+    - Hom
+
+edge_ord_encoded:
+  cols_to_transform:
+    - Date
 
 train_autoencoder:
   epochs: 5
@@ -11,8 +37,18 @@ infer_with_autoencoder:
   cols_to_encode:
     - Date
 
-graph_nx:
+graph_nx_unconcat:
   edge_tuple_src: Opp
   edge_tuple_dst: Hom
+  node_id: Nam
   n_targets: []
   e_targets: [Opp.1, Tm]
+
+process_dgl:
+  train_ratio: 0.7
+  val_ratio: 0.1
+
+train_gcn:
+  epochs: 25
+  node_out_feats: 16
+  edge_hidden_feats: 64

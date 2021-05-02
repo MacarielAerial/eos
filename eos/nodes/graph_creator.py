@@ -58,6 +58,77 @@ def link_nodes_with_no_graph(df: DataFrame, params: Dict[str, Any]) -> Graph:
     return g
 
 
+def link_nodes_one_edge_one_node(
+    df_edge: DataFrame, df_node: DataFrame, params: Dict[str, Any]
+) -> Graph:
+    """
+    Creates/Modify a NetworkX graph with a dataframe with edge tuples and edge attributes
+    and a dataframe with node ids and node attributes
+    """
+    # Initiate empty graph
+    g: Graph = nx.MultiDiGraph()
+    log.info(f"Created a graph of type {g.__class__}")
+
+    # Gather metadata
+    edge_tuple_src, edge_tuple_dst = params["edge_tuple_src"], params["edge_tuple_dst"]
+    edge_attrs = list(df_edge.drop([edge_tuple_src, edge_tuple_dst], axis=1).columns)
+    log.info(
+        f"({edge_tuple_src}, {edge_tuple_dst}) is edge tuple and "
+        f"{edge_attrs} are edge attributes"
+    )
+    node_id = params["node_id"]
+    node_attrs = list(df_node.drop([node_id], axis=1).columns)
+    log.info(f"{node_id} is node id and {node_attrs} are node attributes")
+
+    n_targets = params["n_targets"]
+    e_targets = params["e_targets"]
+    df_edge["label"] = df_edge[e_targets].apply(np.argmax, axis=1)
+    df_edge["label"] = df_edge["label"].astype(float)
+    log.info(
+        "Edge attribute 'label' has been created with "
+        f"{np.sum(df_edge['label'])/df_edge.shape[0]} positives"
+    )
+    g.graph.update({"n_targets": n_targets, "e_targets": e_targets})
+    log.info(
+        f"Added edge targets {e_targets} as global graph attributes and"
+        f"added node targets {n_targets} as global graph attrbutes"
+    )
+
+    # Add nodes
+    df_node_as_dict: Dict[str, Dict[str, float]] = df_node.to_dict(orient="index")
+    nbunch: List[Tuple[float, Dict[str, float]]] = []
+    for row in df_node_as_dict.values():
+        n = row[node_id]
+        d = {d_k: d_v for d_k, d_v in row.items() if d_k != node_id}
+        node_tuple = (n, d)
+        nbunch.append(node_tuple)
+
+    log.info(f"Gathered {len(nbunch)} node tuples from node dataframe")
+    g.add_nodes_from(nbunch)
+
+    # Add edges
+    df_edge_as_dict: Dict[str, Dict[str, float]] = df_edge.to_dict(orient="index")
+    ebunch: List[Tuple[float, float, Dict[str, float]]] = []
+    for row in df_edge_as_dict.values():
+        u = row[edge_tuple_src]
+        v = row[edge_tuple_dst]
+        d = {
+            d_k: d_v
+            for d_k, d_v in row.items()
+            if d_k not in set([edge_tuple_src, edge_tuple_dst])
+        }
+        edge_tuple = (u, v, d)
+        ebunch.append(edge_tuple)
+    log.info(f"Gathered {len(ebunch)} edge tuples from edge dataframe")
+    g.add_edges_from(ebunch)
+
+    log.info(
+        f"Post node linking graph has {g.number_of_nodes()} nodes and {g.number_of_edges()} edges"
+    )
+
+    return g
+
+
 def concat_features(g: Graph) -> Graph:
     """
     Concatenate all features, assumed to be numeric, into one feature

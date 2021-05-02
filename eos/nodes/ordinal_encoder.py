@@ -12,7 +12,6 @@ def fit_ordinal_encoder(df: DataFrame, params: Dict[str, Any]) -> OrdinalEncoder
     Fits an ordinal encoder to a dataframe
     """
     cols_to_encode: List[str] = params["cols_to_encode"]
-
     enc = OrdinalEncoder()
     log.info(f"Encoding the following columns:\n{cols_to_encode}")
     enc.fit(df[cols_to_encode])
@@ -26,11 +25,11 @@ def transform_with_ordinal_encoder(
     """
     Transforms a dataframe with an ordinal encoder
     """
-    cols_to_encode: List[str] = params["cols_to_encode"]
+    cols_to_transform: List[str] = params["cols_to_transform"]
 
     log.info(
-        f"Transforming the following columns with the ordinal encoder:\n{cols_to_encode}"
+        f"Transforming the following columns with the ordinal encoder:\n{cols_to_transform}"
     )
-    df[cols_to_encode] = enc.transform(df[cols_to_encode])
+    df[cols_to_transform] = enc.transform(df[cols_to_transform])
 
     return df

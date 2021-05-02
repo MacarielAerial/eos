@@ -1,31 +1,89 @@
+node_dataframe:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/01_raw/teams.csv
+  layer: raw
+
 edge_dataframe:
   type: kedro.extras.datasets.pandas.CSVDataSet
   filepath: data/01_raw/games.csv
+  layer: raw
 
-e_ord_encoder:
+n_ord_encoder_nid:
   type: kedro.extras.datasets.pickle.PickleDataSet
-  filepath: data/02_intermediate/e_ord_encoder.pkl
+  filepath: data/02_intermediate/n_ord_encoder_nids.pkl
+  layer: intermediary
+
+n_ord_encoder_attr:
+  type: kedro.extras.datasets.pickle.PickleDataSet
+  filepath: data/02_intermediate/n_ord_encoder_attr.pkl
+  layer: intermediary
+
+e_ord_encoder_attr:
+  type: kedro.extras.datasets.pickle.PickleDataSet
+  filepath: data/02_intermediate/e_ord_encoder_attr.pkl
+  layer: intermediary
+
+node_ord_encoded_nids_only:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/02_intermediate/node_ord_encoded_nids_only.csv
+  layer: intermediary
+
+node_ord_encoded:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/02_intermediate/node_ord_encoded.csv
+  layer: intermediary
+
+edge_ord_encoded_src_only:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/02_intermediate/edge_ord_encoded_src_only.csv
+  layer: intermediary
+
+edge_ord_encoded_nids_only:
+  type: kedro.extras.datasets.pandas.CSVDataSet
+  filepath: data/02_intermediate/edge_ord_encoded_nids_only.csv
+  layer: intermediary
 
 edge_ord_encoded:
   type: kedro.extras.datasets.pandas.CSVDataSet
   filepath: data/02_intermediate/edge_ord_encoded.csv
+  layer: intermediary
 
 edge_dataloader:
   type: eos.datasets.dataloader_dataset.DataLoaderDataSet
   filepath: data/02_intermediate/edge_dataloader.pkl
+  layer: intermediary
 
 edge_autoencoder:
   type: eos.datasets.autoencoder_dataset.AutoEncoderDataSet
   filepath: data/02_intermediate/edge_autoencoder.pt
+  layer: intermediary
 
 edge_auto_encoded:
   type: kedro.extras.datasets.pandas.CSVDataSet
   filepath: data/02_intermediate/edge_auto_encoded.csv
+  layer: intermediary
 
 graph_nx_unconcat:
   type: kedro.extras.datasets.networkx.NetworkXDataSet
-  filepath: data/02_intermediate/graph_nx_unconcat.json
+  filepath: data/03_primary/graph_nx_unconcat.json
+  layer: primary
 
 graph_nx:
   type: kedro.extras.datasets.networkx.NetworkXDataSet
-  filepath: data/02_intermediate/graph_nx.json
+  filepath: data/03_primary/graph_nx.json
+  layer: primary
+
+graph_dgl_no_mask:
+  type: eos.datasets.dgl_dataset.DGLDataSet
+  filepath: data/04_features/graph_dgl_no_mask.json
+  layer: features
+
+graph_dgl:
+  type: eos.datasets.dgl_dataset.DGLDataSet
+  filepath: data/05_model_input/graph_dgl.json
+  layer: model input
+
+model_gcn:
+  type: eos.datasets.gcn_dataset.GCNDataSet
+  filepath: data/06_models/model_gcn.json
+  layer: models

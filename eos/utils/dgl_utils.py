@@ -13,7 +13,8 @@ def evaluate(model, graph, n_feats, e_feats, labels, mask):
     model.eval()
     with torch.no_grad():
         # Use logit to compress values into 0~1 range
-        probs = torch.sigmoid(model(graph, n_feats, e_feats))
+        logits = model(graph, n_feats, e_feats)
+        probs = torch.sigmoid(logits)
         probs = probs[mask]
         # Round for binary assignment and squeeze for shapeshift
         labels = labels[mask]

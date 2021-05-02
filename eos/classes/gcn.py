@@ -14,6 +14,7 @@ import logging
 
 import torch
 import torch.nn as nn
+from torch.nn.functional import sigmoid
 from dgl.nn.pytorch import Set2Set
 
 from eos.classes.gcn_modules.mpnn import MPNNGNN
@@ -106,7 +107,8 @@ class MLPPredictor(nn.Module):
         h_u = edges.src["h"]
         h_v = edges.dst["h"]
         score = self.W(torch.cat([h_u, h_v], 1))
-        return {"score": score}
+        prob = sigmoid(score)
+        return {"prob": prob}
 
     def forward(self, graph, h):
         # h contains the node representations computed from the GNN defined
@@ -114,4 +116,4 @@ class MLPPredictor(nn.Module):
         with graph.local_scope():
             graph.ndata["h"] = h
             graph.apply_edges(self.apply_edges)
-            return graph.edata["score"]
+            return graph.edata["prob"]

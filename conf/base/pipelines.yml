@@ -1,11 +1,35 @@
 autoencoder_pipeline:
   =: pipelinex.FlexiblePipeline
   nodes:
-    - inputs: [edge_dataframe, params:edge_dataframe]
+    - inputs: [node_dataframe, params:n_ord_encoder_nid]
       func: eos.nodes.ordinal_encoder.fit_ordinal_encoder
-      outputs: e_ord_encoder
+      outputs: n_ord_encoder_nid
 
-    - inputs: [edge_dataframe, e_ord_encoder, params:edge_dataframe]
+    - inputs: [node_dataframe, params:n_ord_encoder_attr]
+      func: eos.nodes.ordinal_encoder.fit_ordinal_encoder
+      outputs: n_ord_encoder_attr
+
+    - inputs: [edge_dataframe, params:e_ord_encoder_attr]
+      func: eos.nodes.ordinal_encoder.fit_ordinal_encoder
+      outputs: e_ord_encoder_attr
+
+    - inputs: [node_dataframe, n_ord_encoder_nid, params:node_ord_encoded_nids_only]
+      func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
+      outputs: node_ord_encoded_nids_only
+
+    - inputs: [node_ord_encoded_nids_only, n_ord_encoder_attr, params:node_ord_encoded]
+      func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
+      outputs: node_ord_encoded
+
+    - inputs: [edge_dataframe, n_ord_encoder_nid, params:edge_ord_encoded_src_only]
+      func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
+      outputs: edge_ord_encoded_src_only
+
+    - inputs: [edge_ord_encoded_src_only, n_ord_encoder_nid, params:edge_ord_encoded_nids_only]
+      func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
+      outputs: edge_ord_encoded_nids_only
+
+    - inputs: [edge_ord_encoded_nids_only, e_ord_encoder_attr, params:edge_ord_encoded]
       func: eos.nodes.ordinal_encoder.transform_with_ordinal_encoder
       outputs: edge_ord_encoded
 
@@ -25,10 +49,34 @@ autoencoder_pipeline:
 networkx_pipeline:
   =: pipelinex.FlexiblePipeline
   nodes:
-    - inputs: [edge_auto_encoded, params:graph_nx]
-      func: eos.nodes.graph_creator.link_nodes_with_no_graph
+    # - inputs: [edge_auto_encoded, params:graph_nx]
+    #   func: eos.nodes.graph_creator.link_nodes_with_no_graph
+    #   outputs: graph_nx_unconcat
+
+    - inputs: [edge_auto_encoded, node_ord_encoded, params:graph_nx_unconcat]
+      func: eos.nodes.graph_creator.link_nodes_one_edge_one_node
       outputs: graph_nx_unconcat
 
     - inputs: graph_nx_unconcat
       func: eos.nodes.graph_creator.concat_features
       outputs: graph_nx
+
+
+dgl_pipeline:
+  =: pipelinex.FlexiblePipeline
+  nodes:
+    - inputs: graph_nx
+      func: eos.nodes.geometric_deep_learning.convert_nx_to_dgl
+      outputs: graph_dgl_no_mask
+
+    - inputs:
+        dgl_tuple: graph_dgl_no_mask
+        params: params:process_dgl
+      func: eos.nodes.geometric_deep_learning.process_dgl
+      outputs: graph_dgl
+
+    - inputs:
+        dgl_tuple: graph_dgl
+        params: params:train_gcn
+      func: eos.nodes.geometric_deep_learning.train_gcn
+      outputs: model_gcn
