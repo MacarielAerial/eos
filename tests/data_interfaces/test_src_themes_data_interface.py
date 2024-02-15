@@ -2,26 +2,12 @@ import tempfile
 from pathlib import Path
 
 import orjson
-from pytest import fixture
 
 from eos.data_interfaces.src_themes_data_interface import (
-    SourceTheme,
     SourceThemes,
     SourceThemesDataInterface,
 )
 from tests.conftest import TestDataPaths
-
-
-@fixture
-def mock_source_themes() -> SourceThemes:
-    source_themes = SourceThemes(
-        members=[
-            SourceTheme(theme="efg", sector="abc", description="dwmdm w w dw."),
-            SourceTheme(theme="hij", sector="abc", description="dsakj sd kjsd aj."),
-        ]
-    )
-
-    return source_themes
 
 
 def test_from_untyped_jsonl(test_data_paths: TestDataPaths) -> None:

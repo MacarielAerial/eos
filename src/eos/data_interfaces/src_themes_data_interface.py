@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 import dacite
 import orjson
@@ -42,6 +42,15 @@ class SourceThemes:
             )
 
             return source_themes
+
+    def validate(self) -> None:
+        # Themes are assumed to be unique
+        set_themes: Set[str] = {source_theme.theme for source_theme in self.members}
+
+        if len(set_themes) != len(self.members):
+            raise ValueError(
+                f"Themes contained within {self.__name__} " "object are not unique"
+            )
 
 
 class SourceThemesDataInterface:

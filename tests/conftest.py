@@ -4,6 +4,8 @@ from pathlib import Path
 
 from pytest import ExitCode, Session, fixture
 
+from eos.data_interfaces.src_themes_data_interface import SourceTheme, SourceThemes
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,6 +41,18 @@ class TestDataPaths:
 @fixture
 def test_data_paths() -> TestDataPaths:
     return TestDataPaths()
+
+
+@fixture
+def mock_source_themes() -> SourceThemes:
+    source_themes = SourceThemes(
+        members=[
+            SourceTheme(theme="efg", sector="abc", description="dwmdm w w dw."),
+            SourceTheme(theme="hij", sector="abc", description="dsakj sd kjsd aj."),
+        ]
+    )
+
+    return source_themes
 
 
 def pytest_sessionstart(session: Session) -> None:
