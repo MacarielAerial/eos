@@ -22,3 +22,14 @@ poetry run python -m eos.pipelines.source_themes_to_element_dfs -pst data/02_int
 ```sh
 poetry run python -m eos.pipelines.encode_features -pnd data/03_primary/node_dfs.json -pst data/01_raw/all-MiniLM-L6-v2/ -pdfe data/04_feature/
 ```
+
+4. (Optional) Store encodings in a vector database
+
+```sh
+```
+
+5. Cluster themes into sub industries and cluster sub industries into industries
+
+```sh
+poetry run python -m eos.pipelines.cluster_for_sub_and_industries -pte data/04_feature/theme.npy -pde data/04_feature/description.npy -psil data/04_feature/sub_industry_label.npy -pil data/04_feature/industry_label.npy
+```

@@ -20,6 +20,8 @@ pandas = "^2.2.0"
 networkx = "^3.2.1"
 sentence-transformers = "^2.3.1"
 weaviate-client = "^4.4.4"
+scikit-learn = "^1.4.1.post1"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
@@ -78,7 +80,8 @@ show_error_codes = true
 
 [[tool.mypy.overrides]]
 module = [
-    "sentence_transformers.*"
+    "sentence_transformers.*",
+    "sklearn.*"
 ]
 ignore_missing_imports = true
 warn_return_any = false
