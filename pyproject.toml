@@ -18,6 +18,10 @@ orjson = "^3.9.13"
 dacite = "^1.8.1"
 pandas = "^2.2.0"
 networkx = "^3.2.1"
+sentence-transformers = "^2.3.1"
+weaviate-client = "^4.4.4"
+scikit-learn = "^1.4.1.post1"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
@@ -32,6 +36,7 @@ ipykernel = "^6.29.2"
 nbformat = "^5.9.2"
 ruff = "^0.2.1"
 shellcheck-py = "^0.9.0.6"
+pandas-stubs = "^2.1.4.231227"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -74,7 +79,10 @@ warn_unused_ignores = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = []
+module = [
+    "sentence_transformers.*",
+    "sklearn.*"
+]
 ignore_missing_imports = true
 warn_return_any = false
 
