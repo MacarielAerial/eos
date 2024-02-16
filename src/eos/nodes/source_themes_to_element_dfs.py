@@ -20,7 +20,7 @@ from eos.data_interfaces.src_themes_data_interface import SourceThemes
 logger = logging.getLogger(__name__)
 
 
-def source_themes_to_element_dfs(
+def _source_themes_to_element_dfs(
     source_themes: SourceThemes,
 ) -> Tuple[NodeDFs, EdgeDFs]:
     # Iterables for Theme node data
@@ -36,7 +36,7 @@ def source_themes_to_element_dfs(
 
     # Iterables for ThemeToSector edge data
     eids_tts: List[Tuple[int, int]] = []
-    etype_tts: List[Tuple[int, int]] = []
+    etype_tts: List[str] = []
 
     # Execute collection of graph elements
     curr_nid: int = 0
@@ -95,6 +95,7 @@ def source_themes_to_element_dfs(
         f"and has columns {df_tts.columns}"
     )
 
+    # Construct result objects from dataframes
     node_dfs = NodeDFs(
         members=[
             NodeDF(ntype=NodeType.theme, df=df_theme),

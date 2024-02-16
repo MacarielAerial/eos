@@ -49,7 +49,8 @@ class SourceThemes:
 
         if len(set_themes) != len(self.members):
             raise ValueError(
-                f"Themes contained within {self.__name__} " "object are not unique"
+                f"Themes contained within {self.__class__.__name__} "
+                "object are not unique"
             )
 
 

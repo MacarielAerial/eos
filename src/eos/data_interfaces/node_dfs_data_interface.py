@@ -49,7 +49,7 @@ class NodeDFsDataInterface:
             )
             f.write(json_str)
 
-            logger.info(f"Saved a {node_dfs} type object to {self.filepath}")
+            logger.info(f"Saved a {type(node_dfs)} type object to {self.filepath}")
 
     def load(self) -> NodeDFs:
         with open(self.filepath, "rb") as f:
@@ -57,7 +57,9 @@ class NodeDFsDataInterface:
             node_dfs = dacite.from_dict(
                 data_class=NodeDFs,
                 data=json_data,
-                config=dacite.Config(type_hooks={DataFrame: df_type_hook}),
+                config=dacite.Config(
+                    type_hooks={DataFrame: df_type_hook}, cast=[NodeType]
+                ),
             )
 
             logger.info(f"Loaded a {node_dfs} object from {self.filepath}")

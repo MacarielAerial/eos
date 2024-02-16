@@ -46,7 +46,7 @@ class EdgeDFsDataInterface:
             )
             f.write(json_str)
 
-            logger.info(f"Saved a {edge_dfs} type object to {self.filepath}")
+            logger.info(f"Saved a {type(edge_dfs)} type object to {self.filepath}")
 
     def load(self) -> EdgeDFs:
         with open(self.filepath, "rb") as f:
@@ -54,7 +54,9 @@ class EdgeDFsDataInterface:
             edge_dfs = dacite.from_dict(
                 data_class=EdgeDFs,
                 data=json_data,
-                config=dacite.Config(type_hooks={DataFrame: df_type_hook}),
+                config=dacite.Config(
+                    type_hooks={DataFrame: df_type_hook}, cast=[EdgeType]
+                ),
             )
 
             logger.info(f"Loaded a {edge_dfs} object from {self.filepath}")

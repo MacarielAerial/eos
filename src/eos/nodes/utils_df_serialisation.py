@@ -1,5 +1,5 @@
 from io import StringIO
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 from pandas import DataFrame
@@ -15,7 +15,7 @@ def default(obj: Any) -> Any:
     )
 
 
-def df_type_hook(json_df: Dict[str, Any]) -> DataFrame:
-    df = pd.read_json(StringIO(json_df), orient="table")
+def df_type_hook(json_str_df: str) -> DataFrame:
+    df = pd.read_json(StringIO(json_str_df), orient="table")
 
     return df
