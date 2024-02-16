@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 import dacite
 import orjson
@@ -34,6 +34,16 @@ class EdgeDF:
 class EdgeDFs:
     members: List[EdgeDF]
 
+    def validate(self) -> None:
+        list_etype: List[EdgeType] = [edge_df.etype for edge_df in self.members]
+        set_etype: Set[EdgeType] = {edge_df.etype for edge_df in self.members}
+
+        if len(set_etype) != len(list_etype):
+            raise ValueError(
+                "Edge type dataframes including the following "
+                f"edge types are not unique:\n{list_etype}"
+            )
+
 
 class EdgeDFsDataInterface:
     def __init__(self, filepath: Path) -> None:
@@ -59,6 +69,6 @@ class EdgeDFsDataInterface:
                 ),
             )
 
-            logger.info(f"Loaded a {edge_dfs} object from {self.filepath}")
+            logger.info(f"Loaded a {type(edge_dfs)} object from {self.filepath}")
 
             return edge_dfs

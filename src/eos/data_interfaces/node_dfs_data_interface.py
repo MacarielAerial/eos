@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Set
 
 import dacite
 import orjson
@@ -20,6 +20,7 @@ class NodeAttrKey(str, Enum):
     ntype = "ntype"
     theme = "theme"
     description = "description"
+    sector = "sector"
 
 
 class NodeType(str, Enum):
@@ -36,6 +37,23 @@ class NodeDF:
 @dataclass
 class NodeDFs:
     members: List[NodeDF]
+
+    def validate(self) -> None:
+        list_ntype: List[NodeType] = [node_df.ntype for node_df in self.members]
+        set_ntype: Set[NodeType] = {node_df.ntype for node_df in self.members}
+
+        if len(set_ntype) != len(list_ntype):
+            raise ValueError(
+                "Node type dataframes including the following "
+                f"node types are not unique:\n{list_ntype}"
+            )
+
+    def to_dict(self) -> Dict[NodeType, DataFrame]:
+        ntype_to_df: Dict[NodeType, DataFrame] = {
+            node_df.ntype: node_df.df for node_df in self.members
+        }
+
+        return ntype_to_df
 
 
 class NodeDFsDataInterface:
@@ -62,6 +80,6 @@ class NodeDFsDataInterface:
                 ),
             )
 
-            logger.info(f"Loaded a {node_dfs} object from {self.filepath}")
+            logger.info(f"Loaded a {type(node_dfs)} object from {self.filepath}")
 
             return node_dfs

@@ -9,5 +9,6 @@ exclude =
     build,
     dist,
     .venv,
+    data,
 max-complexity = 11
 max-line-length = 88

@@ -95,8 +95,13 @@ def mock_source_themes() -> SourceThemes:
 def mock_node_dfs() -> NodeDFs:
     node_dfs = NodeDFs(
         members=[
-            NodeDF(ntype=NodeType.theme, df=DataFrame({"aaa": [1, 2], "bbb": [3, 4]})),
-            NodeDF(ntype=NodeType.sector, df=DataFrame({"ccc": [5, 6], "ddd": [7, 8]})),
+            NodeDF(
+                ntype=NodeType.theme,
+                df=DataFrame(
+                    {"theme": ["dsad", "dasd"], "description": ["dsagw", "hrgr"]}
+                ),
+            ),
+            NodeDF(ntype=NodeType.sector, df=DataFrame({"sector": ["gkne"]})),
         ]
     )
 

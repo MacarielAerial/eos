@@ -20,4 +20,5 @@ poetry run python -m eos.pipelines.source_themes_to_element_dfs -pst data/02_int
 3. Encode graph element features
 
 ```sh
+poetry run python -m eos.pipelines.encode_features -pnd data/03_primary/node_dfs.json -pst data/01_raw/all-MiniLM-L6-v2/ -pdfe data/04_feature/
 ```

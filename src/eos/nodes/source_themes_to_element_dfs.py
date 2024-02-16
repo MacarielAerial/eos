@@ -73,10 +73,15 @@ def _source_themes_to_element_dfs(
             NodeAttrKey.nid.value: nids_theme,
             NodeAttrKey.ntype.value: ntypes_theme,
             NodeAttrKey.theme.value: themes,
+            NodeAttrKey.description.value: descriptions,
         }
     )
     df_sector = DataFrame(
-        {NodeAttrKey.nid.value: nids_sector, NodeAttrKey.ntype.value: ntypes_sector}
+        {
+            NodeAttrKey.nid.value: nids_sector,
+            NodeAttrKey.ntype.value: ntypes_sector,
+            NodeAttrKey.sector.value: sectors,
+        }
     )
     df_tts = DataFrame(
         {EdgeAttrKey.eid.value: eids_tts, EdgeAttrKey.etype.value: etype_tts}
@@ -102,6 +107,8 @@ def _source_themes_to_element_dfs(
             NodeDF(ntype=NodeType.sector, df=df_sector),
         ]
     )
+    node_dfs.validate()
     edge_dfs = EdgeDFs(members=[EdgeDF(etype=EdgeType.theme_to_sector, df=df_tts)])
+    edge_dfs.validate()
 
     return node_dfs, edge_dfs
