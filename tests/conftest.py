@@ -35,6 +35,14 @@ class TestDataPaths:
     def path_mock_edge_dfs(self) -> Path:
         return self.path_dir_data / "mock_edge_dfs.json"
 
+    @property
+    def path_mock_raw_source_themes(self) -> Path:
+        return self.path_dir_data / "mock_raw_source_themes.jsonl"
+
+    @property
+    def path_mock_source_themes(self) -> Path:
+        return self.path_dir_data / "mock_source_themes.json"
+
     # Test output data paths
 
     @property
@@ -52,6 +60,18 @@ class TestDataPaths:
     @property
     def path_saved_edge_dfs(self) -> Path:
         return self.path_dir_output / "saved_edge_dfs.json"
+
+    @property
+    def path_parsed_source_themes(self) -> Path:
+        return self.path_dir_output / "parsed_source_themes.json"
+
+    @property
+    def path_parsed_node_dfs(self) -> Path:
+        return self.path_dir_output / "parsed_node_dfs.json"
+
+    @property
+    def path_parsed_edge_dfs(self) -> Path:
+        return self.path_dir_output / "parsed_edge_dfs.json"
 
 
 @fixture
