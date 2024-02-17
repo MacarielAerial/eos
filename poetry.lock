@@ -1448,6 +1448,23 @@ extra = ["lxml (>=4.6)", "pydot (>=1.4.2)", "pygraphviz (>=1.11)", "sympy (>=1.1
 test = ["pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
+name = "networkx-stubs"
+version = "0.0.1"
+description = "Typing stubs for NetworkX"
+optional = false
+python-versions = "*"
+files = [
+    {file = "networkx-stubs-0.0.1.tar.gz", hash = "sha256:1751cbc87898328f89d79476ec6363174c05f9e48592f0953cc1077188717a21"},
+    {file = "networkx_stubs-0.0.1-py3-none-any.whl", hash = "sha256:ce58dff9b9dcbfdf895d0fce20fa8a73f2e82e581004596b7552086b5bb91366"},
+]
+
+[package.dependencies]
+networkx = "*"
+
+[package.extras]
+dev = ["black", "flake8", "flake8-black", "flake8-pyi", "mypy", "setuptools", "wheel"]
+
+[[package]]
 name = "nltk"
 version = "3.8.1"
 description = "Natural Language Toolkit"
@@ -3740,4 +3757,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "84690c2a830791baf8031e0d6ffc71ca2ee402bf3d218f064195aa7afef34f42"
+content-hash = "e92c023cc53dec83b417cb914cb4ec0fff93b96c9d5cdaef1c7a75c8b80afd16"
