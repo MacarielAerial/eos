@@ -53,6 +53,19 @@ class NodeDFs:
                 f"node types are not unique:\n{list_ntype}"
             )
 
+        list_nid: List[int] = []
+        set_nid: Set[int] = set()
+        for node_df in self.members:
+            df = node_df.df
+            list_nid.extend(df[NodeAttrKey.nid.value].tolist())
+            set_nid = set_nid | set(df[NodeAttrKey.nid.value])
+
+        if len(set_nid) != len(list_nid):
+            raise ValueError(
+                "Node ids are not unique within dataframes in "
+                f"{self.__class__.__name__} object"
+            )
+
     def to_dict(self) -> Dict[NodeType, DataFrame]:
         ntype_to_df: Dict[NodeType, DataFrame] = {
             node_df.ntype: node_df.df for node_df in self.members
