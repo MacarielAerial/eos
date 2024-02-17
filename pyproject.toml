@@ -41,7 +41,7 @@ networkx-stubs = "^0.0.1"
 
 
 [tool.poetry.group.vis.dependencies]
-ariadne = {path = "local_dependencies/ariadne-0.0.1.tar.gz", optional = true}
+ariadne = {path = "local_dependencies/ariadne-0.0.1.tar.gz"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

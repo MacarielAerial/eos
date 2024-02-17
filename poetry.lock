@@ -48,7 +48,7 @@ files = [
 name = "ariadne"
 version = "0.0.1"
 description = "Visualisation tool for MultiDiGraph instances produced by networkx"
-optional = true
+optional = false
 python-versions = ">=3.10,<3.11"
 files = [
     {file = "ariadne-0.0.1.tar.gz", hash = "sha256:6b239748475015f69d460d341d1940e03c0c4d60955bf04e38858e3d3b638e57"},
@@ -2003,7 +2003,7 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-
 name = "plotly"
 version = "5.19.0"
 description = "An open-source, interactive data visualization library for Python"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "plotly-5.19.0-py3-none-any.whl", hash = "sha256:906abcc5f15945765328c5d47edaa884bc99f5985fbc61e8cd4dc361f4ff8f5a"},
@@ -2278,7 +2278,7 @@ windows-terminal = ["colorama (>=0.4.6)"]
 name = "pygraphviz"
 version = "1.12"
 description = "Python interface to Graphviz"
-optional = true
+optional = false
 python-versions = ">=3.10"
 files = [
     {file = "pygraphviz-1.12.tar.gz", hash = "sha256:8b0b9207954012f3b670e53b8f8f448a28d12bdbbcf69249313bd8dbe680152f"},
@@ -3315,7 +3315,7 @@ mpmath = ">=0.19"
 name = "tenacity"
 version = "8.2.3"
 description = "Retry code until it succeeds"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "tenacity-8.2.3-py3-none-any.whl", hash = "sha256:ce510e327a630c9e1beaf17d42e6ffacc88185044ad85cf74c0a8887c6a0f88c"},
@@ -3817,4 +3817,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "711ccc6a9c82ae8f5f510a8c2df5d11517af5e2e073d908228b9084177074a89"
+content-hash = "615592b359467967a9276c4ba9e379ee020b285895b24c1cfdd49c450d4e30a8"
