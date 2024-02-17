@@ -1,10 +1,20 @@
 import logging
 from typing import Any, Dict, List, Set, Tuple
 
-from networkx import Graph
+from networkx import DiGraph
 
-from eos.data_interfaces.edge_dfs_data_interface import EdgeAttrKey, EdgeDF, EdgeDFs
-from eos.data_interfaces.node_dfs_data_interface import NodeAttrKey, NodeDF, NodeDFs
+from eos.data_interfaces.edge_dfs_data_interface import (
+    EdgeAttrKey,
+    EdgeDF,
+    EdgeDFs,
+    EdgeType,
+)
+from eos.data_interfaces.node_dfs_data_interface import (
+    NodeAttrKey,
+    NodeDF,
+    NodeDFs,
+    NodeType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +104,18 @@ def edge_tuples_from_edge_dfs(
     return edge_tuples
 
 
-def _assemble_kg(node_dfs: NodeDFs, edge_dfs: EdgeDFs) -> Graph:
+def _assemble_kg(node_dfs: NodeDFs, edge_dfs: EdgeDFs) -> DiGraph:
+    # Remove sector nodes and edges for now
+    # TODO: Add sector nodes and edges back to complete the kg
+    node_dfs.members = [
+        node_df for node_df in node_dfs.members if node_df.ntype != NodeType.sector
+    ]
+    edge_dfs.members = [
+        edge_df
+        for edge_df in edge_dfs.members
+        if edge_df.etype != EdgeType.theme_to_sector
+    ]
+
     # Sanity check input
     validate_node_dfs_and_edge_dfs(node_dfs=node_dfs, edge_dfs=edge_dfs)
 
@@ -103,7 +124,7 @@ def _assemble_kg(node_dfs: NodeDFs, edge_dfs: EdgeDFs) -> Graph:
     edge_tuples = edge_tuples_from_edge_dfs(edge_dfs=edge_dfs)
 
     # Initialise the knowledge graph
-    nx_g = Graph()
+    nx_g = DiGraph()
     nx_g.add_nodes_from(node_tuples)
     nx_g.add_edges_from(edge_tuples)
 
