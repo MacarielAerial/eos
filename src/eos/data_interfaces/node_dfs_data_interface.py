@@ -22,10 +22,15 @@ class NodeAttrKey(str, Enum):
     description = "description"
     sector = "sector"
 
+    label = "label"  # Cluster labels
+
 
 class NodeType(str, Enum):
     theme = "Theme"
     sector = "Sector"
+
+    sub_industry = "SubIndustry"
+    industry = "Industry"
 
 
 @dataclass

@@ -23,6 +23,10 @@ class EdgeAttrKey(str, Enum):
 class EdgeType(str, Enum):
     theme_to_sector = "ThemeToSector"
 
+    theme_to_sub_industry = "ThemeToSubIndustry"
+    sub_industry_to_industry = "SubIndustryToIndustry"
+    industry_to_sector = "IndustryToSector"
+
 
 @dataclass
 class EdgeDF:

@@ -1,12 +1,3 @@
-{
-  "members": [
-    {
-      "ntype": "Theme",
-      "df": "{\"schema\":{\"fields\":[{\"name\":\"index\",\"type\":\"integer\"},{\"name\":\"nid\",\"type\":\"integer\"},{\"name\":\"ntype\",\"type\":\"string\"},{\"name\":\"theme\",\"type\":\"string\"}],\"primaryKey\":[\"index\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"index\":0,\"nid\":0,\"ntype\":\"Theme\",\"theme\":\"cde\"}]}"
-    },
-    {
-      "ntype": "Sector",
-      "df": "{\"schema\":{\"fields\":[{\"name\":\"index\",\"type\":\"integer\"},{\"name\":\"nid\",\"type\":\"integer\"},{\"name\":\"ntype\",\"type\":\"string\"}],\"primaryKey\":[\"index\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"index\":0,\"nid\":1,\"ntype\":\"Sector\"}]}"
-    }
-  ]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:1ad3a1102c334bdc49cb441f3981b2f7dc2c0da40d5ce23d72656922250b7a76
+size 708
