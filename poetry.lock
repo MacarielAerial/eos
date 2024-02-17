@@ -45,6 +45,27 @@ files = [
 ]
 
 [[package]]
+name = "ariadne"
+version = "0.0.1"
+description = "Visualisation tool for MultiDiGraph instances produced by networkx"
+optional = false
+python-versions = ">=3.10,<3.11"
+files = [
+    {file = "ariadne-0.0.1.tar.gz", hash = "sha256:6b239748475015f69d460d341d1940e03c0c4d60955bf04e38858e3d3b638e57"},
+]
+
+[package.dependencies]
+dacite = ">=1.8.1,<2.0.0"
+networkx = ">=3.1,<4.0"
+orjson = ">=3.9.7,<4.0.0"
+plotly = ">=5.17.0,<6.0.0"
+pygraphviz = ">=1.11,<2.0"
+
+[package.source]
+type = "file"
+url = "local_dependencies/ariadne-0.0.1.tar.gz"
+
+[[package]]
 name = "asttokens"
 version = "2.4.1"
 description = "Annotate AST trees with source code positions"
@@ -1979,6 +2000,21 @@ docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)"]
 
 [[package]]
+name = "plotly"
+version = "5.19.0"
+description = "An open-source, interactive data visualization library for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "plotly-5.19.0-py3-none-any.whl", hash = "sha256:906abcc5f15945765328c5d47edaa884bc99f5985fbc61e8cd4dc361f4ff8f5a"},
+    {file = "plotly-5.19.0.tar.gz", hash = "sha256:5ea91a56571292ade3e3bc9bf712eba0b95a1fb0a941375d978cc79432e055f4"},
+]
+
+[package.dependencies]
+packaging = "*"
+tenacity = ">=6.2.0"
+
+[[package]]
 name = "pluggy"
 version = "1.4.0"
 description = "plugin and hook calling mechanisms for python"
@@ -2237,6 +2273,16 @@ files = [
 [package.extras]
 plugins = ["importlib-metadata"]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pygraphviz"
+version = "1.12"
+description = "Python interface to Graphviz"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "pygraphviz-1.12.tar.gz", hash = "sha256:8b0b9207954012f3b670e53b8f8f448a28d12bdbbcf69249313bd8dbe680152f"},
+]
 
 [[package]]
 name = "pytest"
@@ -3266,6 +3312,20 @@ files = [
 mpmath = ">=0.19"
 
 [[package]]
+name = "tenacity"
+version = "8.2.3"
+description = "Retry code until it succeeds"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tenacity-8.2.3-py3-none-any.whl", hash = "sha256:ce510e327a630c9e1beaf17d42e6ffacc88185044ad85cf74c0a8887c6a0f88c"},
+    {file = "tenacity-8.2.3.tar.gz", hash = "sha256:5398ef0d78e63f40007c1fb4c0bff96e1911394d2fa8d194f77619c05ff6cc8a"},
+]
+
+[package.extras]
+doc = ["reno", "sphinx", "tornado (>=4.5)"]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.3.0"
 description = "threadpoolctl"
@@ -3757,4 +3817,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "e92c023cc53dec83b417cb914cb4ec0fff93b96c9d5cdaef1c7a75c8b80afd16"
+content-hash = "615592b359467967a9276c4ba9e379ee020b285895b24c1cfdd49c450d4e30a8"

@@ -2,6 +2,7 @@ import logging
 import shutil
 from pathlib import Path
 
+from networkx import Graph
 from pandas import DataFrame
 from pytest import ExitCode, Session, fixture
 
@@ -43,6 +44,10 @@ class TestDataPaths:
     def path_mock_source_themes(self) -> Path:
         return self.path_dir_data / "mock_source_themes.json"
 
+    @property
+    def path_mock_nx_g(self) -> Path:
+        return self.path_dir_data / "mock_nx_g.json"
+
     # Test output data paths
 
     @property
@@ -72,6 +77,10 @@ class TestDataPaths:
     @property
     def path_parsed_edge_dfs(self) -> Path:
         return self.path_dir_output / "parsed_edge_dfs.json"
+
+    @property
+    def path_saved_nx_g(self) -> Path:
+        return self.path_dir_output / "saved_nx_g.json"
 
 
 @fixture
@@ -120,6 +129,16 @@ def mock_edge_dfs() -> EdgeDFs:
     )
 
     return edge_dfs
+
+
+@fixture
+def mock_nx_g() -> Graph:
+    nx_g = Graph()
+    nx_g.add_node(0, ntype="haha")
+    nx_g.add_node(1, ntype="ohno")
+    nx_g.add_edge(0, 1, etype="lol")
+
+    return nx_g
 
 
 def pytest_sessionstart(session: Session) -> None:
