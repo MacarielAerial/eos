@@ -1,8 +1,3 @@
-{
-  "members": [
-    {
-      "etype": "ThemeToSector",
-      "df": "{\"schema\":{\"fields\":[{\"name\":\"index\",\"type\":\"integer\"},{\"name\":\"eid\",\"type\":\"string\"},{\"name\":\"etype\",\"type\":\"string\"}],\"primaryKey\":[\"index\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"index\":0,\"eid\":[0,1],\"etype\":\"ThemeToSector\"}]}"
-    }
-  ]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f2818e3c0e36f819339d51028c223da06085494e6f4757374d5ee688e220cbcf
+size 353

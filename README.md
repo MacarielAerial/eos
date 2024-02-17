@@ -33,3 +33,15 @@ poetry run python -m eos.pipelines.encode_features -pnd data/03_primary/node_dfs
 ```sh
 poetry run python -m eos.pipelines.cluster_for_sub_and_industries -pte data/04_feature/theme.npy -pde data/04_feature/description.npy -psil data/04_feature/sub_industry_label.npy -pil data/04_feature/industry_label.npy
 ```
+
+6. Parse intermediate layer graph elements from base layer elements and clustering result
+
+```sh
+poetry run python -m eos.pipelines.parse_interm_layer_elements -pbnd data/03_primary/node_dfs.json -pbed data/03_primary/edge_dfs.json -psil data/04_feature/sub_industry_label.npy -pil data/04_feature/industry_label.npy -pind data/04_feature/interm_node_dfs.json -pied data/04_feature/interm_edge_dfs.json
+```
+
+7. Construct a knowledge graph from graph elements of all types
+
+```sh
+poetry run python -m eos.pipelines.assemble_kg -pnd data/04_feature/interm_node_dfs.json -ped data/04_feature/interm_edge_dfs.json -png data/04_feature/nx_g.json
+```
