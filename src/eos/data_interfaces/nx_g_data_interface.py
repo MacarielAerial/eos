@@ -13,6 +13,12 @@ class NXGDataInterface:
         self.filepath = filepath
 
     def save(self, nx_g: Graph) -> None:
+        if not self.filepath.parent.exists():
+            logger.info(
+                f"Creating {self.filepath.parent} because it does not yet exist"
+            )
+            self.filepath.parent.mkdir(parents=True, exist_ok=True)
+
         with open(self.filepath, "wb") as f:
             json_data = nx.node_link_data(nx_g)
 

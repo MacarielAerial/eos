@@ -22,10 +22,17 @@ def encode_features(
     model = SentenceTransformer(model_name_or_path=str(path_sentence_transformer))
 
     # Task Processing & Data Access - Output
+    if not path_dir_feature_encoding.exists():
+        logger.info(
+            f"Creating {path_dir_feature_encoding} because it does not yet exist"
+        )
+        path_dir_feature_encoding.mkdir(parents=True, exist_ok=True)
+
     for feature_encoding in _encode_features(model=model, node_dfs=node_dfs):
         path_feature_encoding = (
             path_dir_feature_encoding / feature_encoding.attr_key.value
         ).with_suffix(".npy")
+
         np.save(file=path_feature_encoding, arr=feature_encoding.encoding)
 
         logger.info(
