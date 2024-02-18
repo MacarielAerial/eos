@@ -23,7 +23,9 @@ def encode_features(
 
     # Task Processing & Data Access - Output
     if not path_dir_feature_encoding.exists():
-        logger.info(f"Creating {path_dir_feature_encoding} because it does not yet exist")
+        logger.info(
+            f"Creating {path_dir_feature_encoding} because it does not yet exist"
+        )
         path_dir_feature_encoding.mkdir(parents=True, exist_ok=True)
 
     for feature_encoding in _encode_features(model=model, node_dfs=node_dfs):

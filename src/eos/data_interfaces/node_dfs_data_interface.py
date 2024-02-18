@@ -80,7 +80,9 @@ class NodeDFsDataInterface:
 
     def save(self, node_dfs: NodeDFs) -> None:
         if not self.filepath.parent.exists():
-            logger.info(f"Creating {self.filepath.parent} because it does not yet exist")
+            logger.info(
+                f"Creating {self.filepath.parent} because it does not yet exist"
+            )
             self.filepath.parent.mkdir(parents=True, exist_ok=True)
 
         with open(self.filepath, "wb") as f:

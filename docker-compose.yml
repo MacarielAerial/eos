@@ -19,9 +19,9 @@ services:
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
       PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
       CLUSTER_HOSTNAME: 'node1'
-  
+
   eos:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
