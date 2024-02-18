@@ -59,6 +59,10 @@ class SourceThemesDataInterface:
         self.filepath = filepath
 
     def save(self, source_themes: SourceThemes) -> None:
+        if not self.filepath.parent.exists():
+            logger.info(f"Creating {self.filepath.parent} because it does not yet exist")
+            self.filepath.parent.mkdir(parents=True, exist_ok=True)
+
         with open(self.filepath, "wb") as f:
             json_str = orjson.dumps(source_themes, option=orjson.OPT_INDENT_2)
             f.write(json_str)
