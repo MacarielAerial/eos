@@ -14,7 +14,7 @@ Four sections of documentation followed addressed each of these issues in turn:
 * Section III outlines major issues within the current version and possible remedies that may be implemented in the future.
 * Section IV contains code examples required to execute individual modules of the application. This section is aimmed at developers who wish to further extend existing application logic.
 
-## II. Development and Production Features
+## II. Development, Production and Machine Learning Features
 
 ### II. I. Development Features
 
@@ -43,7 +43,28 @@ The project uses a variety of lint and test tools to maintain code quality. Here
 - pytest (python code tests)
 - coverage (python code coverage check)
 
-#### II. I. III. CI/CD
+Note that python tests are incomplete due to resource constraint. Integration tests and end-to-end tests are largely missing. The author essentially opted for manual testing on dev machines instead of coding automated integration and end-to-end tests because of their complexity. Nevertheless, unit tests are relatively comprehensive because they are eaiser to write.
+
+#### II. I. III. Databases
+The project does not include any implementation of database instances and their integration with the application logic. In practice, an acyclical flow should be established to preserve and to version control raw, intermediate and final data structures.
+
+Different databases offer different trade-offs. Some of them are listed below:
+
+* Relational Databases
+- **PostgreSQL** hosted on AWS is more developer friendly given most developers are familiar with relational databases. The downside is given the tree/graph structure of data structures involved. Relational databases are not just hard to maintain but also miss certain features such as semantic queries.
+
+* Graph Databases
+- **Neo4j** specialises storing and querying graph data which are useful tasks given data structures involved. Graph databases suffer from two issues. The first is most developers are not familiar with graph databases and therefore maintainence cost can be high. The second is graph databases are usually more expensive due to their inherent complexity.
+- **AWS Neptune** is an alternative in AWS ecosystem.
+
+* Vector Databases
+- **Weaviate** offers efficient storage of embedding vectors and semantic search, two powerful features that make vector databases the most appropriate database solution for this project in the author's opinion. Vector databases can be hosted on deployed EKS instances.
+
+#### II. I. IV. Intermediate and Final Data Structures
+
+### II. II. Deployment Features
+
+#### II. II. I. CI/CD
 The project uses GitHub Action for on-push and on-pull-request CI workflows. Currently the only active workflow is a python build and test workflow. Constrained by resources, the project does not have a bake workflow and a deployment workflow. A bake workflow can build the application environment to avoid building dependencies being included in inference environment at runtime. A deployment workflow can upload the baked environment to cloud for production.
 
 DevOps requires extensive infrastructure and is largely independent of the application logic itself. Given the project focuses on a machine learning problem and does not demand comprehensive infrastructure that is required to effectively integrate the solution into a production system, MLOps components are simply brushed over with a few bullet points instead of being implemented.
@@ -51,13 +72,50 @@ DevOps requires extensive infrastructure and is largely independent of the appli
 * Automatic Deployment of EKS Instances
 - **Terraform** can be used to deploy clusters of ECS instances to host data processing, model training and inference services.
 
-* Deployment of Micro-services on Deployed EKS instances
+* Vendor Agnostic CI/CD Tools
+- **Jenkins** is an alternative to GitHub Action which avoids vendor lock-in.
+- **TeamCity** is also an alternative which can be hosted on deployed EKS instances.
+
+* Model Management and Experiment Tracking Tools
+* **Weights & Biases** is a tool to manage iterations of machine learning experiments and their results.
+* **MLFlow** is a similar tool which can also be hosted on deployed EKS instances.
+
+* Deployment of Micro-services on Deployed EKS Instances
 - **Kubernetes** can be used to manage container services hosted by deployed ECS instances at scale.
 
-* Deployment of Micro-services with Serverless Framework
-- **AWS Fargate** is a Serverless alternative to eliminate need for maintaining clusters of instances and services run on these clusters. The author prefers Serverless over a massive Infrastructure-as-Code codebase because the author prefers to work 
+* Serverless Alternative to Self-managed Clusters
+- **AWS Fargate** is a Serverless alternative to eliminate need for maintaining clusters of instances and services run on these clusters. The author prefers Serverless over a massive Infrastructure-as-Code codebase because the author does not poessess such DevOps skills to exploit the benefit of homegrown solutions over serverless cloud computing.
+
+#### II. II. II. Containerisation
+Despite the presence of configuration for two containers, only one of which hosts the application itself. The vector database container is currently redundant and is not connected to the application at all.
+
+The docker image for the application, despite its multi-stage setup, requires more optimisation. The image itself contains raw input data which should be hosted either in S3 or a separate database instance. The application currently exists as one single service when multiple services, including database instances and/or S3, should be involved.
+
+Nevertheless, containerised application locks system and python dependencies which improve reproducibility and ease deployment.
+
+### II. III. Machine Learning Features
+
+#### II. III. I. Clustering Algorithms
+
+#### II. III. II. Clustering Result
+
+#### II. III. III. Evaluation Process
 
 ## III. Shortcomings and Future Extensions
+
+### III. I. Simple Algorithm
+
+### III. II. Unstable Clustering Result
+
+### III. III. Possibility of Leveraging Existing Knowledge Graph
+
+### III. IV. Possibility of Further Utilising LLM for Feature Engineering and Evaluation
+
+### III. V. Unhosted Data
+
+### III. VI. Incomplete Python and Application Tests
+
+### III. VII. Incomplete Deployment Logic
 
 ## IV. Code Examples
 
