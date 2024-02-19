@@ -119,6 +119,8 @@ Nevertheless, containerised application locks system and python dependencies whi
 
 ### III. VIII. Unpublished Python Project
 
+### III. IX. Possibility of Automatic Documentation
+
 ## IV. Code Examples
 
 1. Create a typed representation of raw data
