@@ -115,7 +115,8 @@ Given resource constraint, clustering result is evaluated by GPT-4. An attempt w
 The author's ChatGPT Plus subscription was used as an alternative. An assistant was created on the author's ChatGPT account to fulfill the role of cluster text labeller and clustering result evaluator. The output of this assistant was copied and pasted over from the web console into the local file system as jsons to fulfill GPT-4's role in the evaluation process.
 
 The following python module details the process to produce input prompt for GPT-4. The process is a combination of explicit instructions to GPT-4 to return json objects of a certain schema and feed of entire clustering result into GPT-4 to solicit text labels and evaluation notes in json format.
-https://github.com/MacarielAerial/eos/blob/e9969992e812243de225320e6d7ad460694464e1/src/eos/nodes/query_llm.py
+
+https://github.com/MacarielAerial/eos/blob/e9969992e812243de225320e6d7ad460694464e1/src/eos/nodes/query_llm.py#L143-L189
 
 ## III. Shortcomings and Future Extensions
 
