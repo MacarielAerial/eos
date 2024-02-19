@@ -73,6 +73,10 @@ class NodeDFs:
 
         return ntype_to_df
 
+    @property
+    def ntypes(self) -> List[NodeType]:
+        return [node_df.ntype for node_df in self.members]
+
 
 class NodeDFsDataInterface:
     def __init__(self, filepath: Path) -> None:
