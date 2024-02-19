@@ -8,6 +8,7 @@ from typing import Dict, List, TypedDict
 
 import dacite
 import orjson
+from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,20 @@ class ClustersEval:
                 ClusterEval.from_raw_dict(cluster_id=k, raw_dict=v)
                 for k, v in raw_dict.items()
             ],
+        )
+
+    def to_df(self) -> DataFrame:
+        id: List[int] = [cluster_eval.id for cluster_eval in self.members]
+        label: List[str] = [cluster_eval.label for cluster_eval in self.members]
+        note: List[str] = [cluster_eval.note for cluster_eval in self.members]
+
+        return DataFrame(
+            {
+                # Confusing scheme because "label" can refer to clustering algo output
+                "label": id,
+                "text_label": label,  # Human interpretable labels
+                "note": note,
+            }
         )
 
 

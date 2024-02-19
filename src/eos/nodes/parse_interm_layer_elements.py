@@ -192,7 +192,7 @@ def parse_industry_to_sector_edges(
     # The assumption is there's only one sector node
     nid_src = df_industry[NodeAttrKey.nid.value].to_list()
     nid_dst = df_sector[NodeAttrKey.nid.value].to_list()
-    eid: List[Tuple[int, int]] = list(zip(nid_src, nid_dst))
+    eid: List[Tuple[int, int]] = list(zip(nid_src, nid_dst * len(nid_src)))
 
     etype = np.array([EdgeType.industry_to_sector.value] * len(eid))
 

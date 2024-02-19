@@ -165,10 +165,24 @@ poetry run python -m eos.pipelines.assemble_kg -pnd data/04_feature/interm_node_
 8. Call Chat Completion API to provide cluster text labels and to evaluate clustering performance
 
 ```sh
+# Insufficient spending of the author's own account prevents the author from accessing GPT-4 through Chat Completion API
+# This stage is replaced with manual requests through ChatGPT web console
 ```
 
 9. Type LLM's clustering evaluation jsons
 
 ```sh
 poetry run python -m eos.pipelines.eval_llm_output -psic data/01_raw/llm_sub_industry_clusters.json -pic data/01_raw/llm_industry_clusters.json -psie data/02_intermediate/sub_industry_clusters_eval.json -pie data/02_intermediate/industry_clusters_eval.json
+```
+
+10. Augment cluster node dataframes with typed LLM output
+
+```sh
+poetry run python -m eos.pipelines.augment_element_dfs_with_llm -pbnd data/04_feature/interm_node_dfs.json -psie data/02_intermediate/sub_industry_clusters_eval.json -pie data/02_intermediate/industry_clusters_eval.json -plnd data/04_feature/llm_node_dfs.json
+```
+
+11. Construct a second knowledge graph from elements supplemented with LLM output
+
+```sh
+poetry run python -m eos.pipelines.assemble_kg -pnd data/04_feature/llm_node_dfs.json -ped data/04_feature/interm_edge_dfs.json -png data/04_feature/llm_nx_g.json
 ```

@@ -9,12 +9,7 @@ from eos.data_interfaces.edge_dfs_data_interface import (
     EdgeDFs,
     EdgeType,
 )
-from eos.data_interfaces.node_dfs_data_interface import (
-    NodeAttrKey,
-    NodeDF,
-    NodeDFs,
-    NodeType,
-)
+from eos.data_interfaces.node_dfs_data_interface import NodeAttrKey, NodeDF, NodeDFs
 
 logger = logging.getLogger(__name__)
 
@@ -105,11 +100,7 @@ def edge_tuples_from_edge_dfs(
 
 
 def _assemble_kg(node_dfs: NodeDFs, edge_dfs: EdgeDFs) -> DiGraph:
-    # Remove sector nodes and edges for now
-    # TODO: Add sector nodes and edges back to complete the kg
-    node_dfs.members = [
-        node_df for node_df in node_dfs.members if node_df.ntype != NodeType.sector
-    ]
+    # Remove original edges because edges are replaced by paths
     edge_dfs.members = [
         edge_df
         for edge_df in edge_dfs.members
