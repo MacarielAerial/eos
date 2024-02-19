@@ -247,15 +247,11 @@ poetry run python -m eos.pipelines.eval_llm_output -psic data/01_raw/llm_sub_ind
 
 10. Augment cluster node dataframes with typed LLM output
 
-LLM's output is integrated into the knowledge graph as node attributes. Each sub industry and industry node now has both a text label and a note on its performance.
-
 ```sh
 poetry run python -m eos.pipelines.augment_element_dfs_with_llm -pbnd data/04_feature/interm_node_dfs.json -psie data/02_intermediate/sub_industry_clusters_eval.json -pie data/02_intermediate/industry_clusters_eval.json -plnd data/04_feature/llm_node_dfs.json
 ```
 
 11. Construct a second knowledge graph from elements supplemented with LLM output
-
-Finally, a second version of the knowledge graph is constructed using all output produced in all previous steps.
 
 ```sh
 poetry run python -m eos.pipelines.assemble_kg -pnd data/04_feature/llm_node_dfs.json -ped data/04_feature/interm_edge_dfs.json -png data/04_feature/llm_nx_g.json
