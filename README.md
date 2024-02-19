@@ -75,21 +75,21 @@ The project uses GitHub Action for on-push and on-pull-request CI workflows. Cur
 DevOps requires extensive infrastructure and is largely independent of the application logic itself. Given the project focuses on a machine learning problem and does not demand comprehensive infrastructure that is required to effectively integrate the solution into a production system, MLOps components are simply brushed over with a few bullet points instead of being implemented.
 
 * Automatic Deployment of EKS Instances
-- **Terraform** can be used to deploy clusters of ECS instances to host data processing, model training and inference services.
+    - **Terraform** can be used to deploy clusters of ECS instances to host data processing, model training and inference services.
 
 * Vendor Agnostic CI/CD Tools
-- **Jenkins** is an alternative to GitHub Action which avoids vendor lock-in.
-- **TeamCity** is also an alternative which can be hosted on deployed EKS instances.
+    - **Jenkins** is an alternative to GitHub Action which avoids vendor lock-in.
+    - **TeamCity** is also an alternative which can be hosted on deployed EKS instances.
 
 * Model Management and Experiment Tracking Tools
-* **Weights & Biases** is a tool to manage iterations of machine learning experiments and their results.
-* **MLFlow** is a similar tool which can also be hosted on deployed EKS instances.
+    - **Weights & Biases** is a tool to manage iterations of machine learning experiments and their results.
+    - **MLFlow** is a similar tool which can also be hosted on deployed EKS instances.
 
 * Deployment of Micro-services on Deployed EKS Instances
-- **Kubernetes** can be used to manage container services hosted by deployed ECS instances at scale.
+    - **Kubernetes** can be used to manage container services hosted by deployed ECS instances at scale.
 
 * Serverless Alternative to Self-managed Clusters
-- **AWS Fargate** is a Serverless alternative to eliminate need for maintaining clusters of instances and services run on these clusters. The author prefers Serverless over a massive Infrastructure-as-Code codebase because the author does not poessess such DevOps skills to exploit the benefit of homegrown solutions over serverless cloud computing.
+    - **AWS Fargate** is a Serverless alternative to eliminate need for maintaining clusters of instances and services run on these clusters. The author prefers Serverless over a massive Infrastructure-as-Code codebase because the author does not poessess such DevOps skills to exploit the benefit of homegrown solutions over serverless cloud computing.
 
 #### II. II. II. Containerisation
 Despite the presence of configuration for two containers, only one of which hosts the application itself. The vector database container is currently redundant and is not connected to the application at all.
@@ -99,7 +99,7 @@ The docker image for the application, despite its multi-stage setup, requires mo
 Nevertheless, containerised application locks system and python dependencies which improve reproducibility and ease deployment.
 
 The following shell script serves as the application logic itself if it were to be run in a container.
-https://github.com/MacarielAerial/eos/blob/e9969992e812243de225320e6d7ad460694464e1/scripts/project_entry_point.sh
+https://github.com/MacarielAerial/eos/blob/e9969992e812243de225320e6d7ad460694464e1/scripts/project_entry_point.sh#L1-L8
 
 ### II. III. Machine Learning Features
 
