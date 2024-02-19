@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Set
+from typing import Dict, List, Set
 
 import dacite
 import orjson
@@ -47,6 +47,13 @@ class EdgeDFs:
                 "Edge type dataframes including the following "
                 f"edge types are not unique:\n{list_etype}"
             )
+
+    def to_dict(self) -> Dict[EdgeType, DataFrame]:
+        etype_to_df: Dict[EdgeType, DataFrame] = {
+            edge_df.etype: edge_df.df for edge_df in self.members
+        }
+
+        return etype_to_df
 
 
 class EdgeDFsDataInterface:

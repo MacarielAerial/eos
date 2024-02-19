@@ -161,3 +161,14 @@ poetry run python -m eos.pipelines.parse_interm_layer_elements -pbnd data/03_pri
 ```sh
 poetry run python -m eos.pipelines.assemble_kg -pnd data/04_feature/interm_node_dfs.json -ped data/04_feature/interm_edge_dfs.json -png data/04_feature/nx_g.json
 ```
+
+8. Call Chat Completion API to provide cluster text labels and to evaluate clustering performance
+
+```sh
+```
+
+9. Type LLM's clustering evaluation jsons
+
+```sh
+poetry run python -m eos.pipelines.eval_llm_output -psic data/01_raw/llm_sub_industry_clusters.json -pic data/01_raw/llm_industry_clusters.json -psie data/02_intermediate/sub_industry_clusters_eval.json -pie data/02_intermediate/industry_clusters_eval.json
+```
