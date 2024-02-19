@@ -182,6 +182,34 @@ def parse_sub_industry_to_industry_edges(
     )
 
 
+# TODO: The following function is a placeholder for more complicated logic
+# which should trace Industry nodes to their source Theme nodes before
+# linking Industry nodes to different Sector nodes
+def parse_industry_to_sector_edges(
+    df_industry: DataFrame, df_sector: DataFrame
+) -> EdgeDF:
+    # Use heuristics to link all industry nodes to all sector nodes
+    # The assumption is there's only one sector node
+    nid_src = df_industry[NodeAttrKey.nid.value].to_list()
+    nid_dst = df_sector[NodeAttrKey.nid.value].to_list()
+    eid: List[Tuple[int, int]] = list(zip(nid_src, nid_dst))
+
+    etype = np.array([EdgeType.industry_to_sector.value] * len(eid))
+
+    df_industry_to_sector = pd.DataFrame(
+        {EdgeAttrKey.eid.value: eid, EdgeAttrKey.etype.value: etype}
+    )
+
+    logger.info(
+        "Parsed a industry to sector edge dataframe shaped "
+        f"{df_industry_to_sector.shape} from an industry dataframe "
+        f"shaped {df_industry.shape}, a sector dataframe shaped "
+        f"{df_sector.shape}"
+    )
+
+    return EdgeDF(etype=EdgeType.industry_to_sector, df=df_industry_to_sector)
+
+
 def parse_interm_layer_node_dfs(
     base_node_dfs: NodeDFs, sub_industry_label: np.ndarray, industry_label: np.ndarray
 ) -> NodeDFs:
@@ -240,6 +268,14 @@ def parse_interm_layer_edge_dfs(
     )
 
     base_edge_dfs.members.append(sub_industry_to_industry)
+    base_edge_dfs.validate()
+
+    industry_to_sector = parse_industry_to_sector_edges(
+        df_industry=ntype_to_df[NodeType.industry],
+        df_sector=ntype_to_df[NodeType.sector],
+    )
+
+    base_edge_dfs.members.append(industry_to_sector)
     base_edge_dfs.validate()
 
     logger.info(
